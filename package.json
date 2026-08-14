@@ -1,1 +1,13 @@
-
+{
+  "name": "petoria",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Petoria - Gestión y cuidado de mascotas",
+  "dependencies": {
+    "@capacitor/core": "^7.0.0",
+    "@capacitor/ios": "^7.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.0.0"
+  }
+}
