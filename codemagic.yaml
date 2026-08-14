@@ -16,23 +16,27 @@ workflows:
 
       - name: Crear proyecto iOS
         script: |
-          npx expo prebuild --platform ios
+          npx cap add ios
+
+      - name: Sincronizar Petoria con iOS
+        script: |
+          npx cap sync ios
 
       - name: Instalar CocoaPods
         script: |
-          cd ios
+          cd ios/App
           pod install
 
       - name: Compilar para simulador iPhone
         script: |
-          cd ios
+          cd ios/App
           xcodebuild \
-            -workspace Petoria.xcworkspace \
-            -scheme petoria \
+            -workspace App.xcworkspace \
+            -scheme App \
             -sdk iphonesimulator \
             -configuration Debug \
             -derivedDataPath build \
             CODE_SIGNING_ALLOWED=NO
 
     artifacts:
-      - ios/build/Build/Products/Debug-iphonesimulator/*.app
+      - ios/App/build/Build/Products/Debug-iphonesimulator/*.app
