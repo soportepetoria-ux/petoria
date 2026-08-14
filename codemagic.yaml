@@ -14,8 +14,32 @@ workflows:
         script: |
           npm install
 
+      - name: Preparar archivos web de Petoria
+        script: |
+          rm -rf www
+          mkdir -p www
+
+          cp index.html www/
+          cp app.js www/
+          cp manifest.webmanifest www/
+          cp sw.js www/
+
+          cp petoria-logo.png www/
+          cp petoria-share.jpg www/
+          cp apple-touch-icon.png www/
+          cp icon-192.png www/
+          cp icon-512.png www/
+
+          cp contrato-compraventa.jpg www/
+          cp contrato-cria.jpg www/
+          cp formulario-raia-representacion.pdf www/
+          cp formulario-reiac-cesion-traslado.pdf www/
+          cp raia-original.png www/
+          cp reiac-original.png www/
+
       - name: Crear proyecto iOS
         script: |
+          rm -rf ios
           npx cap add ios
 
       - name: Sincronizar Petoria con iOS
@@ -27,15 +51,17 @@ workflows:
           cd ios/App
           pod install
 
-      - name: Compilar para simulador iPhone
+      - name: Compilar Petoria para simulador iPhone
         script: |
           cd ios/App
-          xcodebuild \
+          xcodebuild build \
             -workspace App.xcworkspace \
             -scheme App \
             -sdk iphonesimulator \
             -configuration Debug \
             -derivedDataPath build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO
 
     artifacts:
