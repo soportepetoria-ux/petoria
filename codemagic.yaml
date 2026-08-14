@@ -1,0 +1,38 @@
+workflows:
+  petoria-ios:
+    name: Petoria iOS
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+
+    environment:
+      node: latest
+      xcode: latest
+      cocoapods: default
+
+    scripts:
+      - name: Instalar dependencias
+        script: |
+          npm install
+
+      - name: Crear proyecto iOS
+        script: |
+          npx expo prebuild --platform ios
+
+      - name: Instalar CocoaPods
+        script: |
+          cd ios
+          pod install
+
+      - name: Compilar para simulador iPhone
+        script: |
+          cd ios
+          xcodebuild \
+            -workspace Petoria.xcworkspace \
+            -scheme petoria \
+            -sdk iphonesimulator \
+            -configuration Debug \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO
+
+    artifacts:
+      - ios/build/Build/Products/Debug-iphonesimulator/*.app

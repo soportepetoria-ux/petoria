@@ -1,0 +1,20 @@
+{
+  "name":"Petoria",
+  "short_name":"Petoria",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#fbf4e8",
+  "theme_color": "#7a321f",
+  "icons": [
+    {
+      "src":"icon-192.png?v=20",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src":"icon-512.png?v=20",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

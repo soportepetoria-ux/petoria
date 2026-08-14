@@ -1,0 +1,3967 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#7a321f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Petoria">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="petoria-logo.png">
+<title>Petoria</title>
+<style>
+:root{
+ --paper:#f7f4ee; --paper2:#ffffff; --ink:#26211d; --brown:#4b362b;
+ --pimenton:#8d4e3a; --gold:#b8924a; --line:#ded7cc; --blue:#dfe8eb;
+ --redline:#d9c6bc; --muted:#7b746d; --danger:#a54840; --ok:#5e7b68;
+ --shadow:0 10px 30px rgba(53,42,32,.08);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--ink);background:#efe3cf}
+body{padding-bottom:env(safe-area-inset-bottom)}
+.app{max-width:720px;margin:0 auto;min-height:100vh;background:
+ linear-gradient(90deg,transparent 0 42px,rgba(217,198,188,.55) 42px 43px,transparent 43px),
+ repeating-linear-gradient(0deg,var(--paper) 0 35px,rgba(223,232,235,.55) 35px 36px);
+ box-shadow:0 0 40px rgba(53,42,32,.10);position:relative}
+.cover{background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);padding:calc(18px + env(safe-area-inset-top)) 18px 16px 52px;position:relative;z-index:10}
+.logo{width:100%;max-height:122px;object-fit:cover;object-position:top center;border-radius:14px;border:1px solid #dfbd75;box-shadow:0 4px 12px rgba(63,27,12,.08)}
+.subtitle{text-align:center;letter-spacing:1.4px;text-transform:uppercase;font-size:10px;color:var(--muted);margin-top:5px;font-weight:700}
+.nav{display:flex;gap:5px;overflow-x:auto;overflow-y:hidden;padding:9px 10px 8px 46px;background:rgba(255,250,242,.98);position:sticky;top:0;z-index:40;border-bottom:1px solid var(--line);box-shadow:0 3px 10px rgba(66,34,18,.08);-webkit-overflow-scrolling:touch}
+.nav button{border:1px solid #d8b56a;border-bottom:3px solid #b17715;background:#f5dfad;color:#4a2919;padding:9px 13px;border-radius:12px 12px 4px 4px;font-weight:800;white-space:nowrap;font-size:13px}
+.nav button.active{background:var(--brown);color:#fff2d7;border-color:var(--brown)}
+main{padding:12px 12px 110px 54px}
+.page{display:none} .page.active{display:block}
+.notebook-title{font-family:Georgia,serif;color:var(--brown);font-size:21px;margin:6px 0 12px;display:flex;justify-content:space-between;align-items:center}
+.card{background:rgba(255,253,247,.89);border:1px solid #d9bd86;border-radius:12px;padding:13px;margin:10px 0;box-shadow:2px 3px 0 rgba(128,80,30,.09)}
+.dog{display:grid;grid-template-columns:66px 1fr auto;gap:12px;align-items:center;cursor:pointer}
+.photo{width:66px;height:66px;border-radius:50%;border:3px solid #fff8ea;box-shadow:0 2px 7px rgba(90,55,30,.22);overflow:hidden;background:#f0d6a7;display:grid;place-items:center;font-size:28px;flex:0 0 auto}.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.name{font-family:Georgia,serif;font-weight:700;font-size:18px;color:var(--brown)}
+.small{font-size:12px;color:var(--muted);line-height:1.45}
+.badge{font-size:11px;font-weight:800;padding:5px 8px;border-radius:999px;background:#f0d9a1;color:#5a390c;display:inline-block}
+.badge.due{background:#f2d0ca;color:#90251e}
+.empty{text-align:center;color:var(--muted);padding:26px 10px}
+.plus{position:fixed;right:max(18px,calc((100vw - 720px)/2 + 18px));bottom:calc(24px + env(safe-area-inset-bottom));width:62px;height:62px;border-radius:50%;border:3px solid #f5dfad;background:var(--pimenton);color:#fff;font-size:34px;box-shadow:0 8px 22px rgba(78,28,15,.28);z-index:30}
+.field{margin:9px 0}
+label{font-size:12px;font-weight:800;color:#5d3b28;display:block;margin:0 0 4px}
+input,select,textarea{width:100%;border:1px solid #d8ba80;border-radius:8px;background:#fffdf8;padding:11px;font:inherit;font-size:16px;color:var(--ink)}
+textarea{min-height:75px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+@media(max-width:500px){.grid{grid-template-columns:1fr}.home-dogs{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.btn{border:0;border-radius:9px;padding:11px 14px;font-weight:800;font-size:14px}
+.primary{background:var(--brown);color:#fff5dc}
+.gold{background:#e8c56f;color:#3d250c}
+.danger{background:#f3d5d2;color:#942722}
+.rowactions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.modal{position:fixed;inset:0;background:rgba(38,20,12,.48);z-index:100;display:none;align-items:flex-end;justify-content:center}
+.modal.open{display:flex}
+.sheet{width:min(720px,100%);max-height:91vh;overflow:auto;background:
+ linear-gradient(90deg,transparent 0 34px,var(--redline) 34px 36px,transparent 36px),
+ repeating-linear-gradient(0deg,#fffaf0 0 31px,#c3d9e3 31px 32px);
+ border-radius:22px 22px 0 0;padding:16px 14px 25px 47px}
+.sheethead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.sheethead strong{font-family:Georgia,serif;font-size:20px;color:var(--brown)}
+.x{border:0;background:#ecd7b1;border-radius:50%;width:34px;height:34px;font-size:17px}
+.record{padding:10px 0;border-bottom:1px dashed #cfb67f}
+.notice{background:#fff2ce;border:1px solid #deb85e;border-radius:10px;padding:10px;font-size:12px;color:#5e4217}
+.quick{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.quick .card{margin:0;text-align:center;padding:13px 8px}
+.big{font-size:22px;font-family:Georgia,serif;color:var(--pimenton);font-weight:700}
+input[type=file]{font-size:13px}
+
+.home-dogs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 10px;padding:10px 2px 4px}
+.home-dog{text-align:center;cursor:pointer;min-width:0}
+.home-dog .photo{width:76px;height:76px;margin:0 auto 6px}
+.home-dog .small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.doc-card{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.doc-meta{min-width:0}
+.doc-name{font-weight:800;color:var(--brown);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.doc-actions{display:flex;gap:6px;flex-wrap:wrap}
+.file-note{font-size:11px;color:var(--muted);margin-top:4px}
+
+
+.doc-view-img{display:block;width:100%;max-height:70vh;object-fit:contain;border-radius:10px;background:#fff}
+.doc-view-pdf{width:100%;height:68vh;border:1px solid #d8ba80;border-radius:10px;background:#fff}
+.doc-view-fallback{padding:25px 10px;text-align:center;color:var(--muted)}
+
+
+.profile-head{display:flex;gap:14px;align-items:center;margin-bottom:12px}
+.profile-head .photo{width:92px;height:92px}
+.profile-main{min-width:0}
+.profile-name{font-family:Georgia,serif;font-size:24px;font-weight:700;color:var(--brown);line-height:1.05}
+.profile-meta{font-size:12px;color:var(--muted);margin-top:5px}
+.inner-tabs{display:flex;gap:5px;overflow-x:auto;padding:7px 0 10px;-webkit-overflow-scrolling:touch}
+.inner-tabs button{border:1px solid #d8b56a;background:#f7e7bf;color:#4a2919;padding:8px 11px;border-radius:10px;font-weight:800;white-space:nowrap}
+.inner-tabs button.active{background:var(--pimenton);color:white;border-color:var(--pimenton)}
+.inner-page{display:none}.inner-page.active{display:block}
+.chart-wrap{background:#fffdf8;border:1px solid #d9bd86;border-radius:12px;padding:10px;margin-top:10px}
+.chart-wrap canvas{width:100%;height:220px;display:block}
+.health-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.health-card{background:rgba(255,253,247,.92);border:1px solid #d9bd86;border-radius:10px;padding:10px}
+.health-card b{display:block;color:var(--brown)}
+.folder-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.folder{background:#fff6dc;border:1px solid #d9bd86;border-radius:12px;padding:12px;cursor:pointer}
+.folder .folder-icon{font-size:24px}
+.folder .folder-name{font-weight:800;color:var(--brown);margin-top:4px}
+.folder .folder-count{font-size:11px;color:var(--muted)}
+.timeline-item{position:relative;padding-left:18px;margin:10px 0}
+.timeline-item:before{content:"";position:absolute;left:2px;top:7px;width:7px;height:7px;border-radius:50%;background:var(--gold)}
+.timeline-item:after{content:"";position:absolute;left:5px;top:15px;bottom:-10px;width:1px;background:#d7bb82}
+.timeline-item:last-child:after{display:none}
+.today-card{background:linear-gradient(180deg,#fff8e5,#fffdf8);border:1px solid #d3af63}
+.status-dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:5px;background:#b8b0a5}
+.status-dot.warn{background:#c58a17}.status-dot.due{background:#b43a31}.status-dot.ok{background:#4f7558}
+.repeat-row{display:flex;gap:8px;align-items:end}
+.repeat-row .field{flex:1}
+@media(max-width:520px){.health-grid,.folder-grid{grid-template-columns:1fr}}
+
+
+.hidden{display:none!important}
+
+.brand-center{text-align:center}
+.main-title{font-family:Georgia,"Times New Roman",serif;font-size:29px;font-weight:700;color:var(--ink);letter-spacing:.2px}
+.custom-logo-wrap{margin:0 auto 14px;width:min(260px,78vw);height:118px;border-radius:22px;overflow:hidden;border:1px solid var(--line);background:#fff;box-shadow:var(--shadow);padding:8px}
+.custom-logo-img{width:100%;height:100%;object-fit:contain;display:block}
+.nav{border-radius:0 0 18px 18px}
+.nav button{background:#fff;border:1px solid var(--line);border-bottom:1px solid var(--line);color:var(--ink);box-shadow:none}
+.nav button.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.card{background:rgba(255,255,255,.90);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:15px}
+.plus{background:var(--ink);border:0;box-shadow:0 12px 28px rgba(38,33,29,.20)}
+.btn{border-radius:12px}
+.primary{background:var(--ink);color:white}
+.gold{background:#efe7d8;color:var(--ink);border:1px solid #dfd0b5}
+.profile-head .photo{box-shadow:0 8px 22px rgba(0,0,0,.12)}
+.settings-card{display:grid;gap:10px}
+.crop-area{position:relative;width:100%;aspect-ratio:1/1;background:#111;overflow:hidden;border-radius:18px;touch-action:none}
+.crop-area img{position:absolute;max-width:none;user-select:none;-webkit-user-drag:none;transform-origin:center center}
+.crop-mask{position:absolute;inset:0;border-radius:50%;box-shadow:0 0 0 9999px rgba(0,0,0,.5);pointer-events:none;border:2px solid rgba(255,255,255,.9)}
+.crop-controls{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin-top:12px}
+.crop-controls input[type=range]{width:100%}
+
+
+.contract-paper,.contract-paper *{visibility:visible}.contract-paper{position:absolute;left:0;top:0;width:100%;border:none}}
+
+
+.contract-paper{background:#eee;border-radius:10px;padding:0;overflow:auto}
+.contract-template{position:relative;width:100%;max-width:820px;margin:0 auto;background:#fff}
+.contract-template>img{display:block;width:100%;height:auto}
+.contract-field{position:absolute;font-family:Georgia,serif;color:#17110d;font-size:1.2vw;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.contract-field.small{font-size:1.05vw}
+.contract-field.price{font-weight:700;font-size:1.35vw;text-align:center}
+.contract-field.obs{white-space:normal;line-height:1.25}
+@media(max-width:720px){
+ .contract-field{font-size:1.7vw}.contract-field.small{font-size:1.5vw}.contract-field.price{font-size:1.8vw}
+}
+@media print{
+ body *{visibility:hidden!important}
+ #contractPreview,#contractPreview *{visibility:visible!important}
+ #contractPreview{position:absolute;left:0;top:0;width:100%;margin:0;padding:0}
+ .contract-template{width:100%;max-width:none}
+}
+
+
+#detailModal{z-index:180}
+#dogModal{z-index:320}
+#measureModal,#healthModal,#docModal,#reproModal{z-index:340}
+#contractModal{z-index:500}
+#contractPreviewModal{z-index:600}
+#cropModal{z-index:700}
+.dog-photo-preview{display:flex;align-items:center;gap:12px;margin-top:8px}
+.dog-photo-preview .photo{width:72px;height:72px}
+.contract-canvas-wrap{background:#e9e6df;padding:8px;border-radius:12px;overflow:auto}
+#contractCanvas{display:block;width:100%;height:auto;background:white;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+
+
+.doc-category{background:rgba(255,255,255,.90);border:1px solid var(--line);border-radius:16px;margin:10px 0;overflow:hidden;box-shadow:var(--shadow)}
+.doc-category-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px}
+.doc-category-title{display:flex;align-items:center;gap:10px;min-width:0}
+.doc-category-icon{font-size:25px}
+.doc-category-name{font-weight:800;color:var(--ink)}
+.doc-category-count{font-size:11px;color:var(--muted);margin-top:2px}
+.doc-category-body{border-top:1px solid var(--line);padding:0 12px}
+.doc-category-body .record{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.doc-category-add{white-space:nowrap}
+
+
+.doc-view-img{display:block;width:100%;max-height:72vh;object-fit:contain;border-radius:10px;background:#fff}
+.doc-view-pdf-object{width:100%;height:72vh;border:1px solid var(--line);border-radius:10px;background:#fff}
+.doc-open-external{margin-top:12px}
+
+
+#docViewerModal{
+  z-index:1200!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:calc(10px + env(safe-area-inset-top)) 10px calc(10px + env(safe-area-inset-bottom))!important;
+}
+#docViewerModal .sheet{
+  width:min(760px,calc(100vw - 20px))!important;
+  height:min(92dvh,920px)!important;
+  max-height:92dvh!important;
+  border-radius:22px!important;
+  padding:14px!important;
+  background:#f7f4ee!important;
+  display:flex!important;
+  flex-direction:column!important;
+  overflow:hidden!important;
+}
+#docViewerModal .sheethead{
+  flex:0 0 auto;
+  margin-bottom:10px;
+}
+#docViewerBody{
+  flex:1 1 auto;
+  min-height:0!important;
+  overflow:auto!important;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:8px;
+  -webkit-overflow-scrolling:touch;
+}
+#docViewerBody .doc-view-img{
+  width:auto!important;
+  height:auto!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  border-radius:10px;
+  display:block;
+}
+#docViewerBody .doc-view-pdf-object,
+#docViewerBody iframe{
+  width:100%!important;
+  height:100%!important;
+  min-height:55dvh!important;
+  border:0!important;
+  border-radius:10px!important;
+  background:#fff!important;
+}
+#docViewerModal .rowactions{
+  flex:0 0 auto;
+  margin-top:10px;
+  padding-top:4px;
+}
+@media(max-width:520px){
+  #docViewerModal{
+    padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)!important;
+    align-items:stretch!important;
+  }
+  #docViewerModal .sheet{
+    width:100vw!important;
+    height:100dvh!important;
+    max-height:100dvh!important;
+    border-radius:0!important;
+    padding:12px!important;
+  }
+  #docViewerBody{
+    border-radius:12px;
+  }
+  #docViewerBody .doc-view-pdf-object,
+  #docViewerBody iframe{
+    min-height:62dvh!important;
+  }
+}
+
+
+.doc-screen{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  background:#f7f4ee;
+  display:flex;
+  flex-direction:column;
+  width:100vw;
+  height:100dvh;
+  max-width:none!important;
+  max-height:none!important;
+  overflow:hidden;
+  padding-top:env(safe-area-inset-top);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.doc-screen.hidden{display:none!important}
+.doc-screen-bar{
+  flex:0 0 auto;
+  min-height:58px;
+  display:grid;
+  grid-template-columns:48px 1fr 48px;
+  align-items:center;
+  gap:8px;
+  padding:8px 10px;
+  background:#fff;
+  border-bottom:1px solid var(--line);
+  box-shadow:0 2px 10px rgba(0,0,0,.05);
+}
+.doc-screen-title{
+  text-align:center;
+  font-weight:800;
+  color:var(--ink);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.doc-back,.doc-close{
+  border:0;
+  background:#efe7d8;
+  color:var(--ink);
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  font-size:28px;
+  line-height:1;
+}
+.doc-screen-body{
+  flex:1 1 auto;
+  min-height:0;
+  width:100%;
+  overflow:auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#fff;
+  padding:10px;
+  -webkit-overflow-scrolling:touch;
+}
+.doc-screen-body img{
+  display:block;
+  max-width:100%;
+  max-height:100%;
+  width:auto;
+  height:auto;
+  object-fit:contain;
+}
+.doc-screen-body iframe{
+  width:100%;
+  height:100%;
+  border:0;
+  background:#fff;
+}
+.doc-screen-actions{
+  flex:0 0 auto;
+  display:flex;
+  gap:8px;
+  padding:10px;
+  background:#fff;
+  border-top:1px solid var(--line);
+}
+.doc-screen-actions .btn{flex:1}
+@media(min-width:800px){
+  .doc-screen{
+    inset:2vh 50%;
+    transform:translateX(-50%);
+    width:min(900px,96vw);
+    height:96dvh;
+    border-radius:22px;
+    box-shadow:0 25px 80px rgba(0,0,0,.25);
+    overflow:hidden;
+  }
+}
+
+
+.doc-pdf-fallback{
+  display:none;
+  position:absolute;
+  left:16px;right:16px;bottom:78px;
+  z-index:2;
+  background:rgba(255,250,240,.96);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:10px;
+  text-align:center;
+  box-shadow:var(--shadow);
+}
+.doc-screen-body{position:relative}
+
+
+#docViewerModal.doc-screen{
+  position:fixed!important;
+  inset:0!important;
+  z-index:2147483647!important;
+  isolation:isolate!important;
+  transform:none!important;
+  opacity:1!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+}
+#docViewerModal.doc-screen.hidden{
+  display:none!important;
+}
+body.doc-viewer-open .app,
+body.doc-viewer-open .modal{
+  pointer-events:none!important;
+}
+body.doc-viewer-open #docViewerModal{
+  pointer-events:auto!important;
+}
+
+
+.gallery-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+.gallery-item{position:relative;aspect-ratio:1/1;border-radius:14px;overflow:hidden;background:#eee;border:1px solid var(--line)}
+.gallery-item img{width:100%;height:100%;object-fit:cover;display:block}
+.gallery-del{position:absolute;top:5px;right:5px;width:28px;height:28px;border:0;border-radius:50%;background:rgba(0,0,0,.6);color:#fff}
+.litter-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:13px;margin:10px 0;box-shadow:var(--shadow)}
+.litter-pups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:8px}
+.pup-chip{background:#f4eee5;border:1px solid #e1d4c3;border-radius:10px;padding:8px;font-size:12px}
+.search-hit{cursor:pointer}
+.calendar-event{border-left:4px solid var(--gold)}
+
+
+#reproModal,#litterModal{
+  z-index:2147483000!important;
+}
+#reproModal.open,#litterModal.open{
+  display:flex!important;
+  position:fixed!important;
+  inset:0!important;
+  align-items:flex-end!important;
+  justify-content:center!important;
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+}
+@media(min-width:700px){
+  #reproModal.open,#litterModal.open{align-items:center!important}
+}
+body.child-modal-open #detailModal{
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+
+#reproModal.repro-screen-open{
+  display:flex!important;
+  position:fixed!important;
+  inset:0!important;
+  z-index:2147483646!important;
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+  align-items:flex-end!important;
+  justify-content:center!important;
+  background:rgba(30,24,20,.48)!important;
+  padding:0!important;
+}
+#reproModal.repro-screen-open .sheet{
+  width:100%!important;
+  max-width:720px!important;
+  max-height:94dvh!important;
+  overflow:auto!important;
+  border-radius:24px 24px 0 0!important;
+  position:relative!important;
+  z-index:2147483647!important;
+}
+@media(min-width:700px){
+  #reproModal.repro-screen-open{align-items:center!important;padding:16px!important}
+  #reproModal.repro-screen-open .sheet{border-radius:24px!important;max-height:90dvh!important}
+}
+body.repro-open .app,
+body.repro-open #detailModal{
+  pointer-events:none!important;
+}
+body.repro-open #reproModal{
+  pointer-events:auto!important;
+}
+
+
+.breeder-hidden{display:none!important}
+.mode-pill{display:inline-block;padding:5px 9px;border-radius:999px;background:#efe7d8;font-size:12px;font-weight:800;margin-bottom:8px}
+
+.doc-official-block{margin-top:18px;padding-top:6px;border-top:1px dashed var(--line)}
+.official-form-card{background:linear-gradient(180deg,#fff,#fbf8f1)}
+.official-form-card .doc-category-count{max-width:420px}
+
+#transferFormModal{z-index:2147483646!important}
+#transferFormModal.transfer-open{display:flex!important;position:fixed!important;inset:0!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;align-items:flex-end!important;justify-content:center!important}
+#transferFormModal .transfer-sheet{width:100%!important;max-width:760px!important;max-height:96dvh!important;overflow:auto!important;border-radius:24px 24px 0 0!important}
+@media(min-width:700px){#transferFormModal.transfer-open{align-items:center!important;padding:16px!important}#transferFormModal .transfer-sheet{border-radius:24px!important;max-height:92dvh!important}}
+.generated-form{font-family:Arial,sans-serif;color:#111;padding:18px;max-width:900px;margin:auto}
+.generated-form h1{text-align:center;font-size:22px}.generated-form h2{font-size:16px;border-bottom:2px solid #333;padding-bottom:4px;margin-top:20px}
+.generated-form table{width:100%;border-collapse:collapse}.generated-form td{border:1px solid #888;padding:7px;vertical-align:top}
+.generated-form .signatures{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:45px}.generated-form .signature{min-height:90px;border-top:1px solid #555;padding-top:5px}
+.generated-form .notice{font-size:11px;margin-top:18px}
+
+
+.contract-actions-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.transfer-contract-card{border:1px solid #d9c49d;background:linear-gradient(180deg,#fffdf9,#faf5eb)}
+@media(max-width:430px){.contract-actions-grid{grid-template-columns:1fr}}
+
+.species-badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#eee7dc;font-size:11px;font-weight:800;margin-top:5px}
+.species-note{background:#fffaf1;border:1px solid var(--line);border-radius:12px;padding:10px;margin:8px 0}
+.species-hidden{display:none!important}
+
+.health-record{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;margin:9px 0;box-shadow:var(--shadow)}
+.health-record-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.health-type{font-weight:800}
+.health-meta{font-size:11px;color:var(--muted);margin-top:3px}
+.health-tag{display:inline-block;padding:3px 7px;border-radius:999px;background:#f1eadf;font-size:10px;font-weight:800}
+.health-doc-btn{margin-top:8px}
+
+.smart-alerts-card{border:1px solid #dac6a2;background:linear-gradient(180deg,#fffdf8,#faf5ea)}
+.alert-item{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px 0;border-top:1px dashed var(--line);cursor:pointer}
+.alert-item:first-child{border-top:0}
+.alert-icon{font-size:24px}
+.alert-title{font-weight:800}
+.alert-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.alert-state{font-size:10px;font-weight:800;padding:4px 7px;border-radius:999px;white-space:nowrap}
+.alert-state.overdue{background:#fbe4e4;color:#8f2222}
+.alert-state.today{background:#fff0c9;color:#805c00}
+.alert-state.upcoming{background:#e8f3e7;color:#2d6c31}
+.calendar-legend{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:11px;color:var(--muted);margin:10px 2px}
+.cal-dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+.cal-dot.overdue{background:#b94d4d}
+.cal-dot.today{background:#c99a20}
+.cal-dot.upcoming{background:#4f8b54}
+.calendar-event.overdue{border-left:5px solid #b94d4d}
+.calendar-event.today{border-left:5px solid #c99a20}
+.calendar-event.upcoming{border-left:5px solid #4f8b54}
+.calendar-event{cursor:pointer}
+
+
+.litter-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.puppy-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.puppy-card{border:1px solid var(--line);border-radius:15px;padding:10px;background:#fff}
+.puppy-top{display:flex;gap:9px;align-items:center}
+.puppy-photo{width:58px;height:58px;border-radius:50%;overflow:hidden;background:#eee;display:flex;align-items:center;justify-content:center;font-size:28px;flex:0 0 auto}
+.puppy-photo img{width:100%;height:100%;object-fit:cover}
+.puppy-name{font-weight:800}
+.puppy-status{display:inline-block;font-size:10px;font-weight:800;padding:3px 7px;border-radius:999px;background:#eee7dc;margin-top:3px}
+.puppy-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:9px}
+.puppy-weight-line{font-size:11px;color:var(--muted);margin-top:5px}
+@media(max-width:520px){.puppy-grid{grid-template-columns:1fr}}
+#puppyModal,#puppyWeightModal{z-index:2147483000!important}
+
+:root{--cm-gold:#bd8b28;--cm-cream:#fffaf1;--cm-brown:#4e321a;--cm-dark:#2a2119}
+body{background:#efe6d9!important;padding-bottom:92px!important}
+.app{max-width:720px;margin:auto;background:linear-gradient(180deg,#fffaf2,#fbf4e8);min-height:100dvh}
+.cover{display:none!important}
+main{padding:14px 14px 110px!important}
+.card{background:#fffdf8!important;border:1px solid #ead7b5!important;border-radius:22px!important;box-shadow:0 8px 24px rgba(91,59,24,.06)!important}
+.btn{border-radius:14px!important;min-height:44px;font-weight:800}
+.cm-primary{background:linear-gradient(180deg,#d5a83f,#bd8417)!important;color:#fff!important;border:0!important}
+.cm-secondary{background:#fffaf1!important;color:#5d3d1f!important;border:1px solid #cfa85f!important}
+.cm-dark{background:#2a2119!important;color:#fff!important;border:1px solid #2a2119!important}
+.cm-hidden{display:none!important}
+
+.cm-hero{position:relative;min-height:170px;display:flex;justify-content:center;padding:22px 58px 10px;margin:-14px -14px 12px;background:radial-gradient(circle at 50% 0,#fff 0,#fff9ee 57%,#fbf1df 100%);border-radius:0 0 30px 30px}
+.cm-brand{text-align:center;color:var(--cm-brown)}.cm-paw{font-size:44px}.cm-title{font:28px Georgia,serif;margin-top:6px}.cm-tag{font:italic 15px Georgia,serif;margin-top:4px}
+.cm-round{position:absolute;top:24px;width:50px;height:50px;border-radius:50%;background:#fffaf1;border:1px solid #ead5ae;box-shadow:0 5px 15px rgba(77,52,28,.1);font-size:24px;color:#60411f}
+#cmMenuBtn{left:8px}.cm-alert-btn{right:8px}.cm-alert-btn span{position:absolute;right:-3px;top:-4px;width:22px;height:22px;border-radius:50%;background:#bd8b28;color:#fff;display:grid;place-items:center;font:700 11px sans-serif}
+.cm-panel{padding:14px!important;margin-bottom:12px}.cm-panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.cm-panel-head .name{font-size:16px;color:#58391d}.cm-link{border:0;background:transparent;color:#6c4a26;padding:8px;font-size:12px}
+.cm-home-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+
+.cm-pet-cards{display:flex;gap:12px;justify-content:center;align-items:stretch;flex-wrap:wrap;padding:5px 0 8px}
+.cm-pet-card{width:135px;min-height:165px;border:0;background:#fff;border-radius:17px;padding:12px 8px;display:flex;flex-direction:column;align-items:center;box-shadow:0 4px 14px rgba(77,52,28,.07)}
+.cm-pet-card .photo{width:82px;height:82px;border-radius:50%;overflow:hidden;border:3px solid #d2a653;background:#f1dfbc;display:grid;place-items:center;font-size:38px;margin-bottom:8px}
+.cm-pet-card .photo img{width:100%;height:100%;object-fit:cover;display:block}
+.cm-pet-card strong,.cm-pet-card small{text-align:center}
+
+.cm-bottom-nav{position:fixed!important;left:50%!important;transform:translateX(-50%);bottom:0!important;top:auto!important;width:min(720px,100%)!important;display:grid!important;grid-template-columns:repeat(5,1fr)!important;padding:7px 6px calc(7px + env(safe-area-inset-bottom))!important;background:rgba(255,252,246,.98)!important;border-top:1px solid #eadbc3!important;border-radius:24px 24px 0 0!important;z-index:1000!important}
+.cm-bottom-nav button{border:0!important;background:transparent!important;padding:7px 2px!important;border-radius:15px!important;font-size:10px!important;display:flex;flex-direction:column;align-items:center;gap:2px}
+.cm-bottom-nav button b{font-size:22px}.cm-bottom-nav button.active{color:#b77f19!important;background:#fff7e7!important}
+.plus{bottom:calc(84px + env(safe-area-inset-bottom))!important;background:#2a2119!important;color:#fff!important}
+
+#detailHead .profile-head{display:grid!important;grid-template-columns:auto 1fr!important;align-items:center!important;gap:14px!important}
+#detailHead .photo{width:92px!important;height:92px!important;border-radius:50%!important;overflow:hidden!important;border:3px solid #d2a653!important;background:#f1dfbc!important;display:grid!important;place-items:center!important;font-size:40px!important}
+#detailHead .photo img{width:100%!important;height:100%!important;object-fit:cover!important}
+.cm-pet-shortcuts{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;background:#fffdf8;border:1px solid #ead9bc;border-radius:20px;padding:10px;margin:12px 0 10px}
+.cm-pet-shortcuts button{border:0;background:transparent;border-radius:14px;padding:9px 4px}.cm-pet-shortcuts button.active{background:#fff4dc}.cm-pet-shortcuts b{display:block;font-size:26px;color:#b68122}.cm-pet-shortcuts span{display:block;font-size:9px;font-weight:900}.cm-pet-shortcuts small{display:block;font-size:7px}
+@media(max-width:520px){.inner-tabs{display:none!important}.cm-home-actions{grid-template-columns:1fr}}
+
+.cm-side-menu{display:none;position:fixed;inset:0;z-index:2147483600;background:rgba(40,28,18,.35)}
+.cm-side-menu.open{display:block}.cm-side-sheet{position:absolute;left:0;top:0;bottom:0;width:min(82vw,330px);background:#fffaf1;padding:18px 14px}.cm-side-sheet>button{width:100%;text-align:left;border:0;border-bottom:1px solid #eadbc5;background:transparent;padding:15px 10px}
+
+.cm-savebar{position:fixed;left:0;right:0;bottom:0;z-index:2147483645;background:#fffaf1;padding:10px 14px max(10px,env(safe-area-inset-bottom));box-shadow:0 -8px 24px rgba(54,40,27,.12);margin:auto;max-width:720px}.cm-savebar .cm-dark{width:100%!important;min-height:54px!important}
+#dogModal form{padding-bottom:105px!important}
+
+@media(max-width:720px){
+ .modal,.modal.open,.modal.repro-screen-open,.modal.transfer-open{position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;z-index:2147483640!important;padding:0!important;align-items:flex-start!important;justify-content:center!important;overflow:hidden!important}
+ .modal .sheet{width:100%!important;max-width:none!important;height:100dvh!important;max-height:100dvh!important;margin:0!important;border-radius:0!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;padding-bottom:110px!important;background:#fffaf1!important}
+ body.cm-modal-open .cm-bottom-nav,body.cm-modal-open .plus{display:none!important}
+}
+
+
+.cm-hero-logo{width:min(58vw,260px);max-height:112px;margin:0 auto 7px;border-radius:18px;overflow:hidden;background:#fff;border:1px solid #ead7b5;box-shadow:0 5px 16px rgba(75,50,25,.07)}
+.cm-hero-logo img{display:block;width:100%;height:100%;max-height:112px;object-fit:contain}
+.health-category-block{border:1px solid #ead9bc;border-radius:17px;background:#fffdf8;padding:11px;margin:9px 0}
+.health-category-head{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.health-category-name{font-weight:850;color:#50351d}
+.health-category-records{margin-top:8px;border-top:1px dashed #eadcca}
+.health-category-record{padding:9px 0;border-bottom:1px dashed #eee2d1}
+.health-category-record:last-child{border-bottom:0}
+.contract-history-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:7px}
+
+
+.cm-home-actions{grid-template-columns:1fr!important}
+.health-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.health-card{border:1px solid #ead9bc;border-radius:16px;background:#fffdf8;padding:11px}
+.health-card b{display:block;color:#50351d}
+.health-card .badge{margin-top:6px}
+.health-history-sheet{background:#fffaf1!important}
+.health-history-filters{display:flex;gap:7px;overflow-x:auto;padding:3px 0 10px;scrollbar-width:none}
+.health-history-filters button{border:1px solid #ddc69f;background:#fff;border-radius:999px;padding:7px 10px;white-space:nowrap;font-size:11px;color:#5a3d20}
+.health-history-filters button.active{background:#2a2119;color:#fff;border-color:#2a2119}
+.health-history-item{border:1px solid #ead9bc;border-radius:17px;background:#fffdf8;padding:12px;margin:9px 0}
+.health-history-head{display:flex;justify-content:space-between;gap:9px;align-items:flex-start}
+.health-history-title{font-weight:850;color:#4c321b}
+.health-history-meta{font-size:11px;color:#76624f;margin-top:3px}
+.health-history-status{font-size:10px;font-weight:850;padding:4px 7px;border-radius:999px;white-space:nowrap}
+.health-history-status.overdue{background:#fbe4e4;color:#922727}
+.health-history-status.today{background:#fff0c9;color:#805c00}
+.health-history-status.upcoming{background:#e8f3e7;color:#2d6c31}
+.health-history-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+@media(max-width:520px){.health-grid{grid-template-columns:1fr 1fr}}
+
+
+.photo,.cm-pet-card .photo,#detailHead .photo,.dog .photo{position:relative}
+.sex-badge{position:absolute;right:2px;bottom:2px;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:900;font-size:15px;border:2px solid #fff;box-shadow:0 2px 7px rgba(0,0,0,.18)}
+.sex-badge.male{background:#4d78b7}.sex-badge.female{background:#c56b8e}
+#closeContractPreviewBtn{background:#2a2119!important;color:#fff!important;border-color:#2a2119!important}
+
+
+/* v47: sexo visible + documentos de contrato con barra superior */
+.photo,.cm-pet-card .photo,#detailHead .photo,.dog .photo{position:relative!important}
+.sex-badge{
+ position:absolute!important;
+ right:6px!important;
+ bottom:6px!important;
+ width:27px!important;
+ height:27px!important;
+ min-width:27px!important;
+ min-height:27px!important;
+ border-radius:50%!important;
+ display:flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ color:#fff!important;
+ font-family:Arial,Helvetica,sans-serif!important;
+ font-size:19px!important;
+ font-weight:900!important;
+ line-height:1!important;
+ border:2px solid #fff!important;
+ box-shadow:0 2px 8px rgba(0,0,0,.25)!important;
+ z-index:8!important;
+ overflow:visible!important;
+}
+.sex-badge.male{background:#3f78c5!important}
+.sex-badge.female{background:#cc6e99!important}
+
+.contract-doc-modal{
+ position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;
+ z-index:2147483647!important;background:#fff!important;padding:0!important;
+}
+.contract-doc-sheet{
+ width:100%!important;max-width:none!important;height:100dvh!important;max-height:100dvh!important;
+ margin:0!important;padding:0!important;border-radius:0!important;background:#f3eee5!important;
+ overflow:auto!important;-webkit-overflow-scrolling:touch!important;
+}
+.contract-doc-toolbar{
+ position:sticky!important;top:0!important;z-index:60!important;
+ min-height:84px!important;padding:max(14px,env(safe-area-inset-top)) 14px 12px!important;
+ background:#fff!important;display:flex!important;justify-content:center!important;align-items:flex-end!important;
+ gap:16px!important;box-shadow:0 4px 14px rgba(0,0,0,.15)!important;
+ box-sizing:border-box!important;
+}
+.contract-doc-action{
+ appearance:none!important;-webkit-appearance:none!important;
+ border:0!important;background:#ececec!important;color:#111!important;
+ border-radius:999px!important;padding:10px 18px!important;font-size:16px!important;
+ font-weight:500!important;line-height:1!important;min-height:42px!important;
+}
+.contract-doc-action:active{transform:scale(.98)}
+.contract-doc-modal .contract-paper{margin:0 auto!important;padding:14px 0 28px!important;background:#f3eee5!important}
+.contract-doc-modal .contract-canvas-wrap{width:min(100%,1024px)!important;margin:0 auto!important}
+.contract-doc-modal #contractCanvas{width:100%!important;height:auto!important;display:block!important;background:#fff!important}
+@media print{
+ .contract-doc-toolbar{display:none!important}
+ .contract-doc-modal,.contract-doc-sheet,.contract-doc-modal .contract-paper{background:#fff!important}
+ .contract-doc-modal .contract-paper{padding:0!important}
+}
+
+
+.litter-head-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.litter-head-actions .danger{background:#f5d2cd!important;color:#9c2d25!important;border-color:#e7b1aa!important}
+
+/* v49: indicador de sexo sin fondo, icono grueso y legible */
+.sex-badge{
+ position:absolute!important;
+ right:5px!important;
+ bottom:5px!important;
+ width:auto!important;
+ height:auto!important;
+ min-width:0!important;
+ min-height:0!important;
+ border:0!important;
+ border-radius:0!important;
+ background:transparent!important;
+ box-shadow:none!important;
+ display:block!important;
+ font-family:Arial,Helvetica,sans-serif!important;
+ font-size:34px!important;
+ font-weight:900!important;
+ line-height:.9!important;
+ z-index:8!important;
+ text-shadow:
+   -1px -1px 0 #fff,
+    1px -1px 0 #fff,
+   -1px  1px 0 #fff,
+    1px  1px 0 #fff,
+    0 2px 4px rgba(0,0,0,.18)!important;
+ -webkit-text-stroke:1.2px currentColor!important;
+}
+.sex-badge.male{color:#3578cf!important;background:transparent!important}
+.sex-badge.female{color:#d36a9c!important;background:transparent!important}
+
+
+.litter-head-actions{display:flex!important;gap:7px!important;flex-wrap:wrap!important;justify-content:flex-end!important}
+.litter-head-actions .delete-litter{background:#f5d2cd!important;color:#9c2d25!important;border-color:#e7b1aa!important}
+
+
+/* v50 sexo: fuera del círculo y siempre visible */
+.cm-pet-card .photo,
+#detailHead .photo,
+.dog .photo,
+.home-dog .photo{
+ position:relative!important;
+ overflow:visible!important;
+}
+.cm-pet-card .photo img,
+#detailHead .photo img,
+.dog .photo img,
+.home-dog .photo img{
+ border-radius:50%!important;
+ overflow:hidden!important;
+}
+.sex-badge{
+ position:absolute!important;
+ right:-12px!important;
+ bottom:-3px!important;
+ background:transparent!important;
+ border:0!important;
+ box-shadow:none!important;
+ width:auto!important;
+ height:auto!important;
+ color:inherit!important;
+ font-family:Arial Black,Arial,Helvetica,sans-serif!important;
+ font-size:36px!important;
+ font-weight:900!important;
+ line-height:.9!important;
+ z-index:20!important;
+ overflow:visible!important;
+ -webkit-text-stroke:1.8px currentColor!important;
+ text-shadow:
+  -2px -2px 0 #fff,
+   2px -2px 0 #fff,
+  -2px  2px 0 #fff,
+   2px  2px 0 #fff,
+   0 3px 5px rgba(0,0,0,.16)!important;
+}
+.sex-badge.male{color:#347bd7!important}
+.sex-badge.female{color:#d96c9e!important}
+
+
+/* v50 próximos avisos */
+#cmAlertsList{display:flex;flex-direction:column;gap:8px}
+.cm-alert-row{
+ position:relative;
+ display:grid;
+ grid-template-columns:56px 1fr auto 18px;
+ align-items:center;
+ gap:10px;
+ width:100%;
+ border:1px solid #eee3d0;
+ background:#fffdf8;
+ border-radius:17px;
+ padding:9px 12px 9px 15px;
+ box-sizing:border-box;
+ text-align:left;
+ box-shadow:0 3px 10px rgba(70,45,22,.04);
+ overflow:hidden;
+}
+.cm-alert-row:before{
+ content:"";
+ position:absolute;left:0;top:10px;bottom:10px;width:5px;border-radius:5px;
+ background:var(--alert-color,#8b8b8b);
+}
+.cm-alert-icon{
+ width:48px;height:48px;border-radius:50%;
+ background:#fff;display:grid;place-items:center;
+ font-size:28px;color:var(--alert-color,#8b8b8b);
+ box-shadow:0 3px 9px rgba(0,0,0,.08);
+}
+.cm-alert-title{
+ font-size:14px;font-weight:850;line-height:1.05;
+ color:var(--alert-color,#535353);text-transform:uppercase;
+}
+.cm-alert-pet{font-size:14px;color:#27221e;margin-top:3px}
+.cm-alert-date{
+ font-size:13px;font-weight:850;color:var(--alert-color,#535353);
+ white-space:nowrap;text-align:right;
+}
+.cm-alert-arrow{font-size:24px;color:#b79760;font-weight:300}
+
+
+/* v51 · Portada inspirada en la referencia visual aportada */
+body{
+ background:#f1e7d7!important;
+}
+.app{
+ background:
+  radial-gradient(circle at 12% 12%,rgba(210,176,103,.07) 0 24px,transparent 25px),
+  radial-gradient(circle at 88% 12%,rgba(210,176,103,.07) 0 22px,transparent 23px),
+  linear-gradient(180deg,#fffaf1,#fbf3e6)!important;
+}
+main{padding-top:0!important}
+
+.cm-hero-ref{
+ min-height:245px!important;
+ margin:0 -14px 18px!important;
+ padding:38px 74px 18px!important;
+ border-radius:0 0 34px 34px!important;
+ background:
+  radial-gradient(circle at 18% 72%,rgba(207,170,91,.10) 0 14px,transparent 15px),
+  radial-gradient(circle at 82% 72%,rgba(207,170,91,.10) 0 16px,transparent 17px),
+  linear-gradient(180deg,#fffaf3,#fcf4e7)!important;
+ box-shadow:0 8px 22px rgba(93,62,29,.06)!important;
+}
+.cm-brand-ref{padding-top:8px!important}
+.cm-brand-mark{
+ display:flex;align-items:center;justify-content:center;gap:11px;
+ margin-bottom:7px;
+}
+.cm-line{
+ width:66px;height:1px;background:linear-gradient(90deg,transparent,#c9a158);
+}
+.cm-line:nth-child(3){background:linear-gradient(90deg,#c9a158,transparent)}
+.cm-line.short{width:52px}
+.cm-heart-paw{
+ font-size:57px;line-height:1;color:#c39334;
+ filter:saturate(.7) sepia(.25);
+}
+.cm-title{
+ font-family:Georgia,"Times New Roman",serif!important;
+ font-weight:400!important;
+ font-size:32px!important;
+ letter-spacing:.015em!important;
+ color:#2f241c!important;
+}
+.cm-tag{
+ font-family:Georgia,"Times New Roman",serif!important;
+ font-style:italic!important;
+ font-size:17px!important;
+ color:#60411f!important;
+ margin-top:5px!important;
+}
+.cm-brand-mark-bottom{margin-top:10px;margin-bottom:0}
+.cm-mini-heart{font-size:13px;color:#b8882e}
+
+.cm-menu-ref,.cm-bell-ref{
+ top:58px!important;
+ width:54px!important;height:54px!important;
+ border-radius:50%!important;
+ background:#fffdf8!important;
+ border:1px solid #ecdfc9!important;
+ box-shadow:0 7px 20px rgba(77,52,28,.10)!important;
+ color:#5b3a1b!important;
+}
+.cm-menu-ref{left:20px!important;font-size:28px!important}
+.cm-bell-ref{right:20px!important;font-size:0!important}
+.cm-bell-ref:before{
+ content:"🔔";
+ font-size:27px;
+ filter:grayscale(1) sepia(.3) saturate(.8);
+}
+.cm-alert-btn span{
+ right:-2px!important;top:-5px!important;
+ width:23px!important;height:23px!important;
+ background:#b8882e!important;
+ font-size:11px!important;
+}
+
+/* Panels */
+.cm-panel{
+ border-radius:23px!important;
+ border:1px solid #e6d5b5!important;
+ background:rgba(255,253,248,.96)!important;
+ box-shadow:0 8px 24px rgba(82,55,27,.07)!important;
+ padding:13px!important;
+ margin-bottom:14px!important;
+}
+.cm-panel-head{
+ padding:1px 5px 8px!important;
+ margin-bottom:3px!important;
+}
+.cm-panel-head .name{
+ font-family:Georgia,"Times New Roman",serif!important;
+ font-size:20px!important;
+ font-weight:700!important;
+ color:#4a321e!important;
+}
+.cm-link{
+ color:#5d4327!important;
+ font-size:13px!important;
+}
+
+/* Alerts */
+#cmAlertsList{gap:6px!important}
+.cm-alert-row{
+ min-height:72px!important;
+ grid-template-columns:58px 1fr auto 13px!important;
+ gap:9px!important;
+ border-radius:15px!important;
+ border:1px solid #eee5d6!important;
+ padding:8px 11px 8px 16px!important;
+ background:linear-gradient(180deg,#fff,#fdfbf7)!important;
+ box-shadow:0 3px 9px rgba(72,50,29,.035)!important;
+}
+.cm-alert-row:before{
+ width:5px!important;top:9px!important;bottom:9px!important;
+}
+.cm-alert-icon{
+ width:50px!important;height:50px!important;
+ background:#fff!important;
+ border:1px solid #f0e5d2!important;
+ box-shadow:0 5px 13px rgba(66,46,26,.08)!important;
+ font-size:28px!important;
+}
+.cm-alert-title{font-size:13px!important;letter-spacing:.01em}
+.cm-alert-pet{font-size:14px!important;font-weight:500!important}
+.cm-alert-date{font-size:13px!important}
+.cm-alert-arrow{font-size:23px!important;color:#b89961!important}
+
+/* Pet panel and cards */
+.cm-pet-cards{
+ display:grid!important;
+ grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ gap:12px!important;
+ justify-items:stretch!important;
+ padding:5px 2px 9px!important;
+}
+.cm-pet-card{
+ width:auto!important;
+ min-width:0!important;
+ min-height:210px!important;
+ padding:14px 7px 12px!important;
+ border:1px solid #eee4d3!important;
+ border-radius:17px!important;
+ background:linear-gradient(180deg,#fff,#fdfbf7)!important;
+ box-shadow:0 5px 16px rgba(73,49,26,.055)!important;
+}
+.cm-pet-card .photo{
+ width:112px!important;height:112px!important;
+ min-width:112px!important;min-height:112px!important;
+ border:2.5px solid #cda348!important;
+ margin:0 auto 10px!important;
+ box-shadow:0 5px 13px rgba(80,55,31,.09)!important;
+}
+.cm-pet-card strong{
+ display:block!important;
+ font-family:Georgia,"Times New Roman",serif!important;
+ font-size:20px!important;
+ color:#1e1b18!important;
+ line-height:1.05!important;
+ margin-top:2px!important;
+}
+.cm-pet-card small{
+ display:block!important;
+ font-size:13px!important;
+ color:#2f2a26!important;
+ line-height:1.28!important;
+ margin-top:4px!important;
+}
+.cm-pet-age{
+ display:block;
+ font-size:12px;
+ color:#2e2925;
+ margin-top:2px;
+}
+
+/* Sex icon like reference: small badge just outside photo */
+.cm-pet-card .sex-badge,
+#detailHead .sex-badge,
+.dog .sex-badge{
+ right:-10px!important;
+ bottom:3px!important;
+ font-size:31px!important;
+ -webkit-text-stroke:1.6px currentColor!important;
+ text-shadow:
+  -2px -2px 0 #fff,
+   2px -2px 0 #fff,
+  -2px  2px 0 #fff,
+   2px  2px 0 #fff,
+   0 3px 5px rgba(0,0,0,.14)!important;
+}
+.cm-pet-card .sex-badge.male,
+#detailHead .sex-badge.male,
+.dog .sex-badge.male{color:#3e86d7!important}
+.cm-pet-card .sex-badge.female,
+#detailHead .sex-badge.female,
+.dog .sex-badge.female{color:#d66f98!important}
+
+/* Add pet button like reference */
+.cm-home-actions{
+ display:block!important;
+ margin-top:7px!important;
+}
+#cmAddPet{
+ width:100%!important;
+ min-height:58px!important;
+ border-radius:17px!important;
+ font-size:18px!important;
+ font-weight:700!important;
+ background:linear-gradient(180deg,#d3a743,#bf8617)!important;
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 6px 14px rgba(137,91,16,.12)!important;
+}
+
+/* Bottom nav closer to mockup */
+.cm-bottom-nav{
+ border-radius:25px 25px 0 0!important;
+ padding-top:8px!important;
+ box-shadow:0 -5px 18px rgba(58,42,28,.07)!important;
+}
+.cm-bottom-nav button{
+ font-size:11px!important;
+ font-weight:700!important;
+}
+.cm-bottom-nav button b{font-size:24px!important}
+.cm-bottom-nav button.active{
+ background:#fff8e8!important;
+ color:#b37d19!important;
+}
+
+@media(min-width:620px){
+ .cm-pet-cards{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+ .cm-pet-card{min-height:205px!important}
+ .cm-pet-card .photo{width:105px!important;height:105px!important;min-width:105px!important;min-height:105px!important}
+}
+@media(max-width:390px){
+ .cm-pet-card .photo{width:96px!important;height:96px!important;min-width:96px!important;min-height:96px!important}
+ .cm-pet-card{min-height:195px!important}
+}
+
+
+/* v52 · Tipografía compacta y escala reducida */
+:root{
+ --ui-font:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",Arial,sans-serif;
+}
+body,.app,button,input,select,textarea{font-family:var(--ui-font)!important}
+
+/* Cabecera mucho más compacta */
+.cm-hero-ref{
+ min-height:174px!important;
+ padding:27px 62px 12px!important;
+ margin-bottom:11px!important;
+}
+.cm-brand-ref{padding-top:0!important}
+.cm-heart-paw{font-size:38px!important}
+.cm-brand-mark{gap:8px!important;margin-bottom:3px!important}
+.cm-line{width:43px!important}
+.cm-line.short{width:34px!important}
+.cm-title{
+ font-family:var(--ui-font)!important;
+ font-size:21px!important;
+ line-height:1.08!important;
+ font-weight:700!important;
+ letter-spacing:.02em!important;
+ white-space:nowrap!important;
+}
+.cm-tag{
+ font-family:var(--ui-font)!important;
+ font-size:12px!important;
+ line-height:1.15!important;
+ font-style:italic!important;
+ margin-top:4px!important;
+ white-space:nowrap!important;
+}
+.cm-brand-mark-bottom{margin-top:6px!important}
+.cm-menu-ref,.cm-bell-ref{
+ top:37px!important;width:45px!important;height:45px!important;
+}
+.cm-menu-ref{left:16px!important;font-size:23px!important}
+.cm-bell-ref{right:16px!important}
+.cm-bell-ref:before{font-size:22px!important}
+.cm-alert-btn span{width:20px!important;height:20px!important;font-size:10px!important}
+
+/* Paneles y títulos */
+.cm-panel{
+ border-radius:19px!important;
+ padding:10px!important;
+ margin-bottom:10px!important;
+}
+.cm-panel-head{padding:0 3px 6px!important}
+.cm-panel-head .name{
+ font-family:var(--ui-font)!important;
+ font-size:16px!important;
+ font-weight:750!important;
+ letter-spacing:0!important;
+}
+.cm-link{font-size:11px!important}
+
+/* Avisos más pequeños */
+#cmAlertsList{gap:4px!important}
+.cm-alert-row{
+ min-height:58px!important;
+ grid-template-columns:45px 1fr auto 10px!important;
+ gap:7px!important;
+ padding:6px 8px 6px 13px!important;
+ border-radius:13px!important;
+}
+.cm-alert-row:before{width:4px!important;top:7px!important;bottom:7px!important}
+.cm-alert-icon{width:40px!important;height:40px!important;font-size:22px!important}
+.cm-alert-title{font-size:11px!important}
+.cm-alert-pet{font-size:12px!important}
+.cm-alert-date{font-size:11px!important}
+.cm-alert-arrow{font-size:18px!important}
+
+/* Mascotas compactas */
+.cm-pet-cards{gap:8px!important;padding:2px 1px 6px!important}
+.cm-pet-card{
+ min-height:164px!important;
+ padding:10px 5px 8px!important;
+ border-radius:15px!important;
+}
+.cm-pet-card .photo{
+ width:82px!important;height:82px!important;
+ min-width:82px!important;min-height:82px!important;
+ margin-bottom:6px!important;
+}
+.cm-pet-card strong{
+ font-family:var(--ui-font)!important;
+ font-size:15px!important;
+ font-weight:750!important;
+}
+.cm-pet-card small{font-size:11px!important;margin-top:2px!important}
+.cm-pet-age{font-size:10px!important;margin-top:1px!important}
+.cm-pet-card .sex-badge{
+ font-size:25px!important;right:-8px!important;bottom:1px!important;
+ -webkit-text-stroke:1.2px currentColor!important;
+}
+
+/* Botones */
+#cmAddPet{
+ min-height:48px!important;
+ border-radius:14px!important;
+ font-size:15px!important;
+}
+
+/* Fichas y pantallas interiores: reducir escala general */
+.sheet h2,.sheet .title,.modal h2{font-family:var(--ui-font)!important}
+.sheet h2,.modal h2{font-size:22px!important}
+.card h2,.card h3,.section-title{font-size:17px!important}
+label{font-size:12px!important}
+input,select,textarea{font-size:15px!important}
+.btn,.button,button{line-height:1.15}
+.detail-name{font-family:var(--ui-font)!important}
+
+/* Navegación inferior como referencia tipográfica */
+.cm-bottom-nav button{
+ font-family:var(--ui-font)!important;
+ font-size:10.5px!important;
+ font-weight:700!important;
+ letter-spacing:0!important;
+}
+.cm-bottom-nav button b{font-size:21px!important}
+
+@media(min-width:620px){
+ .cm-pet-card{min-height:160px!important}
+ .cm-pet-card .photo{width:78px!important;height:78px!important;min-width:78px!important;min-height:78px!important}
+}
+@media(max-width:390px){
+ .cm-title{font-size:19px!important}
+ .cm-tag{font-size:11px!important}
+ .cm-hero-ref{padding-left:56px!important;padding-right:56px!important}
+ .cm-pet-card .photo{width:75px!important;height:75px!important;min-width:75px!important;min-height:75px!important}
+ .cm-pet-card{min-height:154px!important}
+}
+
+
+/* v53 · Salud + Avisos + ficha resumen */
+.pet-summary-v53{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:0 0 10px}
+.pet-summary-v53 .sum{background:#fffdf8;border:1px solid #eadcc4;border-radius:12px;padding:8px;min-height:50px}
+.pet-summary-v53 .sum b{display:block;font-size:9.5px;text-transform:uppercase;color:#a7771e;margin-bottom:3px}
+.pet-summary-v53 .sum span{font-size:11.5px;font-weight:650;color:#44382e}
+.cm-alert-row.overdue .cm-alert-date{color:#c53232!important;font-weight:800!important}
+@media(min-width:620px){.pet-summary-v53{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+
+/* v53.2 · Iconos lineales personalizados de avisos */
+.alert-line-icon{display:block;width:30px;height:30px;color:var(--alert-color,#777)}
+.alert-line-icon svg{width:30px;height:30px;display:block;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.cm-alert-icon{color:var(--alert-color,#777)!important}
+
+
+.health-history-actions{display:flex!important;gap:6px!important;flex-wrap:wrap!important;margin-top:9px!important}
+.health-history-actions .btn{min-height:34px!important;padding:7px 9px!important;font-size:11px!important}
+
+
+/* v53.4 · Próximos avisos usa exactamente los iconos de Calendario */
+.cm-alert-icon{
+ font-family:-apple-system,BlinkMacSystemFont,"Apple Color Emoji","Segoe UI Emoji",sans-serif!important;
+ font-size:27px!important;
+ line-height:1!important;
+}
+.cm-alert-icon .alert-line-icon{display:none!important}
+
+
+/* v54 · Crecimiento + Reproducción */
+.growth-summary-v54{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;
+ margin:9px 0 10px;
+}
+.growth-stat-v54{
+ background:#fffdf8;border:1px solid #eadcc4;border-radius:12px;
+ padding:8px 9px;min-height:49px;
+}
+.growth-stat-v54 b{
+ display:block;font-size:9.5px;text-transform:uppercase;
+ color:#a7771e;margin-bottom:3px;
+}
+.growth-stat-v54 span{font-size:12px;font-weight:700;color:#44382e}
+.growth-stat-v54 .positive{color:#3e8b55}
+.growth-stat-v54 .negative{color:#b45545}
+.growth-stat-v54 .neutral{color:#756b61}
+.repro-timeline-v54{
+ display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+ gap:0;margin:10px 0 12px;padding:10px 5px;
+ background:#fffdf8;border:1px solid #eadcc4;border-radius:14px;
+}
+.repro-step-v54{
+ position:relative;text-align:center;padding:2px 3px;min-width:0;
+}
+.repro-step-v54:not(:last-child):after{
+ content:"";position:absolute;top:15px;left:62%;right:-38%;
+ height:2px;background:#e1cda8;z-index:0;
+}
+.repro-step-icon-v54{
+ position:relative;z-index:1;width:30px;height:30px;border-radius:50%;
+ margin:0 auto 5px;display:grid;place-items:center;
+ background:#fff8e9;border:1px solid #dabb7e;
+ font-size:15px;
+}
+.repro-step-v54.done .repro-step-icon-v54{
+ background:#d9ead9;border-color:#8ab18e;color:#2f7540;
+}
+.repro-step-v54.next .repro-step-icon-v54{
+ background:#fff0c9;border-color:#d9ae50;color:#8d6510;
+}
+.repro-step-label-v54{font-size:9.5px;font-weight:800;color:#5a4024;white-space:nowrap}
+.repro-step-date-v54{font-size:8.5px;color:#75695d;margin-top:2px;line-height:1.2}
+.repro-step-v54 button{
+ border:0;background:transparent;padding:0;margin:0;width:100%;color:inherit;
+}
+.repro-future-v54{
+ margin-top:7px;padding:8px 9px;border-radius:11px;
+ background:#f8f0df;border:1px solid #ead4a7;
+ font-size:11px;color:#5e4529;
+}
+@media(min-width:620px){
+ .growth-summary-v54{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media(max-width:390px){
+ .repro-step-label-v54{font-size:8.5px}
+ .repro-step-date-v54{font-size:7.8px}
+}
+
+
+/* v54.1 · Reproducción editable y funciones exclusivas de hembras */
+.female-only-repro.is-hidden{display:none!important}
+.repro-record-actions{
+ display:flex;gap:6px;flex-wrap:wrap;margin-top:7px;
+}
+.repro-record-actions .btn{
+ min-height:33px!important;padding:6px 9px!important;font-size:11px!important;
+}
+
+
+/* v54.2 · barra inferior siempre disponible fuera de ventanas */
+.cm-bottom-nav{
+ display:grid!important;
+ visibility:visible!important;
+ opacity:1!important;
+ pointer-events:auto!important;
+}
+body.cm-modal-open .cm-bottom-nav,
+body.child-modal-open .cm-bottom-nav,
+body.doc-viewer-open .cm-bottom-nav,
+body.repro-open .cm-bottom-nav{
+ display:none!important;
+}
+
+
+/* v54.3 · Ajuste visual del selector de mes en Calendario */
+#calendario .card,
+#calendar .card{
+ box-sizing:border-box!important;
+}
+#calendario .field,
+#calendar .field{
+ width:100%!important;
+ box-sizing:border-box!important;
+}
+#calendarMonth{
+ display:block!important;
+ width:100%!important;
+ max-width:100%!important;
+ box-sizing:border-box!important;
+ margin:0!important;
+ padding:0 16px!important;
+ min-height:52px!important;
+ text-align:center!important;
+ text-align-last:center!important;
+ border-radius:13px!important;
+}
+#calendarDog,
+#calendarType{
+ width:100%!important;
+ max-width:100%!important;
+ box-sizing:border-box!important;
+}
+#calendario .card > .field:first-child,
+#calendar .card > .field:first-child{
+ margin-left:0!important;
+ margin-right:0!important;
+}
+
+
+/* v54.4 · Mes alineado exactamente con los otros filtros */
+#calendarMonth{
+ width:calc(100% - 0px)!important;
+ max-width:100%!important;
+ box-sizing:border-box!important;
+ min-height:52px!important;
+ margin:0!important;
+ padding-left:14px!important;
+ padding-right:14px!important;
+ border-radius:13px!important;
+}
+#calendario .field:first-child,
+#calendar .field:first-child{
+ width:100%!important;
+ max-width:100%!important;
+ padding-left:0!important;
+ padding-right:0!important;
+ box-sizing:border-box!important;
+}
+
+
+/* v54.5 · Copia depurada */
+.copy-title-v545{margin-bottom:10px!important}
+.copy-main-card-v545{
+ display:grid!important;
+ grid-template-columns:44px 1fr!important;
+ gap:8px 10px!important;
+ align-items:start!important;
+ padding:13px!important;
+}
+.copy-icon-v545{
+ width:40px;height:40px;border-radius:50%;
+ display:grid;place-items:center;
+ background:#fff7e5;border:1px solid #e3cca0;
+ font-size:21px;
+}
+.copy-main-text-v545 .name{font-size:15px!important}
+.copy-main-text-v545 .small{margin-top:3px;line-height:1.35}
+.copy-big-btn-v545{
+ grid-column:1/-1!important;
+ width:100%!important;
+ min-height:47px!important;
+ margin-top:4px!important;
+}
+.copy-status-v545{
+ grid-column:1/-1!important;
+ text-align:center;
+ min-height:0;
+ color:#75695e!important;
+}
+.copy-info-card-v545{padding:12px!important}
+.copy-info-grid-v545{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+ gap:7px;margin-top:9px;
+}
+.copy-info-grid-v545>div{
+ text-align:center;padding:9px 4px;
+ border:1px solid #eadcc4;border-radius:11px;background:#fffdf8;
+}
+.copy-info-grid-v545 b{
+ display:block;font-size:12px;color:#5b421f;margin-bottom:3px;
+ overflow:hidden;text-overflow:ellipsis;
+}
+.copy-info-grid-v545 span{font-size:9px;color:#81766c}
+.copy-advanced-v545{padding:0!important;overflow:hidden}
+.copy-advanced-v545 summary{
+ list-style:none;cursor:pointer;padding:13px 14px;
+ font-size:13px;font-weight:750;color:#5a4025;
+}
+.copy-advanced-v545 summary::-webkit-details-marker{display:none}
+.copy-advanced-v545 summary:after{
+ content:"⌄";float:right;font-size:16px;color:#9a7b49;
+}
+.copy-advanced-v545[open] summary:after{content:"⌃"}
+.copy-advanced-body-v545{
+ border-top:1px solid #eadfcd;padding:12px;
+}
+.copy-advanced-row-v545{
+ display:grid;grid-template-columns:1fr auto;gap:10px;
+ align-items:center;padding:10px 0;border-bottom:1px dashed #eadfcd;
+}
+.copy-advanced-row-v545:last-child{border-bottom:0}
+.copy-advanced-row-v545 b{font-size:11px;color:#4a3929}
+.copy-advanced-row-v545 .btn{min-height:34px!important;font-size:10px!important;padding:7px 9px!important}
+@media(max-width:390px){
+ .copy-info-grid-v545{grid-template-columns:1fr 1fr}
+ .copy-info-grid-v545>div:last-child{grid-column:1/-1}
+}
+
+
+/* v55 · Modos Propietario / Criador-Profesional */
+.breeder-hidden{display:none!important}
+
+.mode-options-v55{
+ display:grid;gap:9px;margin:12px 0 10px;
+}
+.mode-option-v55{
+ position:relative;width:100%;display:grid;
+ grid-template-columns:42px 1fr 25px;gap:9px;align-items:center;
+ padding:11px;border:1px solid #e4d7c0;border-radius:14px;
+ background:#fffdf8;color:#43352a;text-align:left;
+ font-family:inherit;
+}
+.mode-option-v55.active{
+ border-color:#c79a43;background:#fff6e4;
+ box-shadow:0 0 0 1px rgba(199,154,67,.16);
+}
+.mode-icon-v55{
+ width:38px;height:38px;border-radius:50%;
+ display:grid;place-items:center;background:#f7ecd5;
+ font-size:20px;
+}
+.mode-copy-v55 b{display:block;font-size:13px;margin-bottom:3px}
+.mode-copy-v55 small{display:block;font-size:10.5px;line-height:1.35;color:#75695e}
+.mode-check-v55{
+ width:22px;height:22px;border-radius:50%;display:grid;place-items:center;
+ background:#eadfcd;color:#fff;font-size:12px;font-weight:900;
+}
+.mode-option-v55.active .mode-check-v55{background:#bd8a2d}
+.mode-help-v55{
+ margin:0 0 10px;padding:8px 9px;border-radius:10px;
+ background:#f8f2e7;font-size:10.5px;line-height:1.4;color:#675846;
+}
+.mode-pill{
+ display:inline-block;margin-bottom:3px;padding:3px 7px;border-radius:999px;
+ background:#ead9b9;color:#6d4e20;font-size:9px;font-weight:800;
+}
+
+/* The shortcut grid automatically becomes cleaner in owner mode */
+body.mode-owner-v55 .cm-pet-shortcuts{
+ grid-template-columns:repeat(2,minmax(0,1fr))!important;
+}
+body.mode-breeder-v55 .cm-pet-shortcuts{
+ grid-template-columns:repeat(3,minmax(0,1fr))!important;
+}
+
+
+/* v56 · Avisos compactos y calendario por rango */
+.cm-alert-actions-v56{
+ display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;
+}
+.cm-alert-actions-v56 button{
+ border:1px solid #e0d3bd;background:#fffaf2;color:#5d4934;
+ border-radius:9px;padding:5px 7px;font-size:9.5px;font-weight:750;
+}
+.cm-alert-actions-v56 .done-v56{background:#e8f3e7;border-color:#bad5b8;color:#36713c}
+.cm-alert-actions-v56 .postpone-v56{background:#fff1d6;border-color:#e5cb93;color:#86621c}
+.cm-alert-main-v56{
+ display:grid;grid-template-columns:45px 1fr auto 10px;gap:7px;align-items:center;
+ cursor:pointer;
+}
+.cm-alert-row-v56{
+ position:relative;border:1px solid #eee5d6;background:linear-gradient(180deg,#fff,#fdfbf7);
+ border-radius:13px;padding:7px 9px 7px 13px;box-shadow:0 3px 9px rgba(72,50,29,.035);
+}
+.cm-alert-row-v56:before{
+ content:"";position:absolute;left:0;top:7px;bottom:7px;width:4px;border-radius:4px;
+ background:var(--alert-color,#777);
+}
+.cm-alert-empty-v56{padding:10px 4px;text-align:center;color:#75695e;font-size:11px}
+.calendar-filter-card-v56{display:grid;gap:9px!important}
+.calendar-filter-card-v56 .field{margin:0!important}
+.calendar-range-v56{
+ display:grid;grid-template-columns:1fr 1fr;gap:8px;
+}
+.calendar-range-v56 input,.calendar-range-v56 select,
+.calendar-filter-card-v56 select{
+ width:100%!important;max-width:100%!important;box-sizing:border-box!important;
+}
+.calendar-range-help-v56{
+ padding:7px 8px;border-radius:9px;background:#f8f2e8;color:#796c5f;
+}
+.calendar-range-help-v56.error{background:#fde9e5;color:#9d4336}
+@media(max-width:390px){.calendar-range-v56{grid-template-columns:1fr}}
+
+
+/* v56.1 · ajustes visuales aprobados */
+.calendar-range-v56{
+ grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+ width:100%!important;
+ max-width:100%!important;
+ box-sizing:border-box!important;
+ overflow:hidden!important;
+}
+.calendar-range-v56 .field{
+ min-width:0!important;
+ width:100%!important;
+ max-width:100%!important;
+ box-sizing:border-box!important;
+ overflow:hidden!important;
+}
+#calendarMonthFrom,#calendarMonthTo,#calendarDateFrom,#calendarDateTo{
+ display:block!important;
+ width:100%!important;
+ min-width:0!important;
+ max-width:100%!important;
+ box-sizing:border-box!important;
+ margin:0!important;
+ padding-left:10px!important;
+ padding-right:10px!important;
+}
+.cm-pet-card{position:relative!important}
+.pet-alert-bell-v561{
+ position:absolute;right:7px;top:7px;z-index:6;
+ width:26px;height:26px;border-radius:50%;
+ display:grid;place-items:center;
+ background:#fffdf8;border:1px solid #ead9ba;
+ box-shadow:0 3px 8px rgba(73,49,26,.10);
+ font-size:14px;
+}
+.cm-pet-birth-v561{
+ display:block;margin-top:3px;font-size:10px;color:#6f655b;
+}
+.dog-card-v561{position:relative!important;padding-right:42px!important}
+.dog-alert-bell-v561{
+ position:absolute;right:10px;top:10px;z-index:4;
+ width:29px;height:29px;border-radius:50%;
+ display:grid;place-items:center;
+ background:#fffaf0;border:1px solid #e2cfaa;
+ box-shadow:0 3px 9px rgba(73,49,26,.08);
+ font-size:15px;
+}
+.dog-birth-v561{font-size:11px;color:#756a5e;margin-top:4px}
+.dog-arrow-v561{align-self:center;color:#9a825d;font-size:20px}
+@media(max-width:390px){
+ .calendar-range-v56{gap:6px!important}
+ #calendarMonthFrom,#calendarMonthTo,#calendarDateFrom,#calendarDateTo{padding-left:7px!important;padding-right:7px!important;font-size:13px!important}
+}
+
+
+/* v57 · Control reproductivo de hembras */
+.breeder-females-v57{margin-top:10px!important}
+.breeder-female-list-v57{display:grid;gap:7px}
+.breeder-female-v57{
+ display:grid;grid-template-columns:42px 1fr auto;gap:8px;align-items:center;
+ width:100%;padding:8px;border:1px solid #eadcc4;border-radius:12px;
+ background:#fffdf8;text-align:left;color:#44372c;font-family:inherit;
+}
+.breeder-female-v57 .photo{
+ width:40px!important;height:40px!important;min-width:40px!important;
+ border-width:2px!important;font-size:20px!important;
+}
+.breeder-female-v57 strong{display:block;font-size:12px}
+.breeder-female-v57 small{display:block;font-size:9.5px;line-height:1.3;color:#75695e}
+.repro-state-v57{
+ display:inline-flex;align-items:center;gap:4px;padding:4px 7px;border-radius:999px;
+ font-size:9px;font-weight:800;white-space:nowrap;
+}
+.repro-state-v57.rest{background:#fff0d5;color:#875d13}
+.repro-state-v57.pregnant{background:#f2e5f7;color:#7a478a}
+.repro-state-v57.lactation{background:#fbe8ef;color:#9b4565}
+.repro-state-v57.ready{background:#e5f3e6;color:#367448}
+.repro-state-v57.soon{background:#fff4c9;color:#8f6912}
+.repro-state-v57.nonbreeding,.repro-state-v57.sterilized{background:#ece9e4;color:#68615b}
+.breeding-plan-v57{margin-bottom:10px!important}
+.breeding-plan-v57 .field{margin-top:8px!important;margin-bottom:0!important}
+.breeding-plan-status-v57{
+ margin-top:8px;padding:8px;border-radius:10px;background:#f8f1e5;
+ font-size:10.5px;line-height:1.4;color:#655644;
+}
+.breeding-plan-status-v57.warning{background:#fff0d8;color:#805a18;border:1px solid #ead09a}
+.breeding-plan-status-v57.ok{background:#eaf4e9;color:#3e7145;border:1px solid #c5ddc5}
+.breeding-plan-status-v57.inactive{background:#eeeae5;color:#67605a}
+.repro-warning-v57{
+ margin:8px 0;padding:9px;border-radius:10px;background:#fff0da;
+ border:1px solid #e6ca91;color:#7c581b;font-size:10.5px;line-height:1.4;
+}
+
+
+/* v57.2 · formulario de reproducción por sexo */
+.repro-camada-note-v572{
+ margin:10px 2px 0;padding:8px 9px;border-radius:10px;
+ background:#f8f1e5;color:#716253;line-height:1.4;
+}
+#reproForm .hidden{display:none!important}
+
+
+/* v57.5 · Estado reproductivo ampliado + búsqueda Mascotas */
+.nav-repro-v575 b{
+ color:#ef5f8d!important;font-size:25px!important;font-weight:900!important;line-height:1!important;
+}
+.repro-home-title-v575{
+ display:flex;align-items:center;gap:8px;border:0;background:none;padding:0;text-align:left;color:inherit;font-family:inherit;
+}
+.repro-home-title-v575 .small{display:block}
+.female-symbol-home-v575,.female-symbol-v575{
+ color:#ef5f8d;font-family:Arial,sans-serif;font-weight:900;line-height:.9;
+ -webkit-text-stroke:.6px #ef5f8d;
+}
+.female-symbol-home-v575{font-size:31px}
+.female-symbol-v575{font-size:43px}
+.repro-page-head-v575{
+ display:flex;align-items:center;justify-content:space-between;gap:10px;margin:5px 2px 14px;
+}
+.repro-page-title-v575{display:flex;align-items:center;gap:10px}
+.repro-page-title-v575 .name{font-size:19px;font-weight:850;color:#4a321f}
+.repro-page-title-v575 .small{font-size:11px;color:#7a7067;margin-top:2px}
+
+.repro-summary-v575{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:10px;
+}
+.repro-summary-item-v575{
+ border:1px solid #eadcc6;background:#fffdf8;border-radius:13px;padding:8px 5px;text-align:center;
+ min-width:0;
+}
+.repro-summary-item-v575 b{display:block;font-size:16px;margin-top:2px}
+.repro-summary-item-v575 span{display:block;font-size:9px;line-height:1.15}
+.repro-summary-item-v575.pregnant{color:#8754bd}
+.repro-summary-item-v575.lactation{color:#3f8ed4}
+.repro-summary-item-v575.rest{color:#ef760d}
+.repro-summary-item-v575.heat{color:#e45584}
+.repro-summary-item-v575.soon{color:#d99a06}
+.repro-summary-item-v575.ready{color:#3d8d53}
+.repro-summary-item-v575.inactive{color:#77716a}
+
+.repro-full-card-v575{padding:4px 12px!important}
+.repro-full-row-v575{
+ position:relative;display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:9px;align-items:center;
+ width:100%;padding:11px 2px;border:0;border-bottom:1px solid #eee2d0;background:transparent;
+ color:#433227;text-align:left;font-family:inherit;
+}
+.repro-full-row-v575:last-child{border-bottom:0}
+.repro-full-row-v575 .photo{
+ width:48px!important;height:48px!important;min-width:48px!important;border-width:2px!important;font-size:22px!important;
+}
+.repro-full-row-v575 .repro-name-v575{font-size:14px;font-weight:850}
+.repro-full-row-v575 .repro-detail-v575{font-size:10px;color:#71675f;line-height:1.35;margin-top:3px}
+.repro-row-right-v575{text-align:right;min-width:92px}
+.repro-row-right-v575 .repro-date-label-v575{font-size:8.5px;color:#766b62}
+.repro-row-right-v575 .repro-date-v575{font-size:11px;font-weight:800;margin-top:2px}
+.repro-heat-pill-v575{
+ display:inline-flex;align-items:center;margin-left:5px;padding:3px 7px;border-radius:999px;
+ background:#ffe6ee;color:#e64e7d;border:1px solid #f6acc3;font-size:8.5px;font-weight:900;
+}
+.repro-heat-alert-v575{
+ margin:10px 0;padding:11px;border-radius:14px;border:1px solid #f5bbcb;
+ background:#fff0f4;color:#7e3e52;font-size:10.5px;line-height:1.45;
+}
+.repro-heat-alert-v575 b{color:#e64e7d;font-size:12px}
+.repro-info-v575{margin-top:10px!important}
+.repro-info-v575 b{font-size:11px}
+.repro-info-v575 .small{margin-top:4px;line-height:1.4}
+
+.pet-search-v575{padding:9px!important;margin-bottom:10px!important}
+.pet-search-row-v575{display:grid;grid-template-columns:minmax(0,1fr) 112px;gap:7px}
+.pet-search-input-v575{
+ display:flex;align-items:center;gap:5px;border:1px solid #d9bb78;border-radius:12px;background:#fffdf8;padding:0 9px;
+}
+.pet-search-input-v575 span{font-size:19px;color:#846942}
+.pet-search-input-v575 input{
+ width:100%;min-width:0;border:0!important;background:transparent!important;padding:10px 2px!important;box-shadow:none!important;
+ font-size:13px!important;
+}
+#petSearchSexV575{
+ width:100%;min-width:0;border:1px solid #d9bb78!important;border-radius:12px!important;background:#fffdf8!important;
+ padding:8px!important;font-size:12px!important;
+}
+.pet-search-empty-v575{padding:18px;text-align:center;color:#766b61}
+
+/* five bottom buttons in breeder, four when breeder item is hidden */
+.cm-bottom-nav{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+body.mode-owner-v55 .cm-bottom-nav{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+@media(max-width:390px){
+ .pet-search-row-v575{grid-template-columns:minmax(0,1fr) 96px}
+ .repro-summary-v575{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .cm-bottom-nav button span{font-size:9px!important}
+}
+
+
+/* v57.6 · refinado visual Hembras + estado en tarjetas */
+.nav-repro-v575{
+ display:flex!important;
+ flex-direction:column!important;
+ align-items:center!important;
+ justify-content:center!important;
+ gap:2px!important;
+}
+.nav-repro-v575 b{
+ color:#ef5f8d!important;
+ font-family:Arial,sans-serif!important;
+ font-size:31px!important;
+ font-weight:900!important;
+ line-height:.88!important;
+ -webkit-text-stroke:.9px #ef5f8d!important;
+ transform:translateY(1px);
+}
+.nav-repro-v575 span{
+ font-size:inherit!important;
+ line-height:1.1!important;
+ font-weight:700!important;
+}
+
+/* alert + reproductive-state icons share one aligned row */
+.dog-card-v561{position:relative!important}
+.pet-card-top-icons-v576{
+ position:absolute;right:9px;top:9px;z-index:8;
+ display:flex;align-items:center;gap:5px;
+}
+.pet-card-top-icons-v576 .dog-alert-bell-v561{
+ position:static!important;right:auto!important;top:auto!important;
+ width:29px;height:29px;
+}
+.pet-repro-icon-v576{
+ width:29px;height:29px;border-radius:50%;
+ display:grid;place-items:center;
+ border:1px solid currentColor;background:#fffdf8;
+ box-shadow:0 3px 9px rgba(73,49,26,.08);
+ font-size:15px;font-weight:900;line-height:1;
+}
+.pet-repro-icon-v576.heat{color:#ef5f8d;background:#fff0f5}
+.pet-repro-icon-v576.pregnant{color:#8552b7;background:#f5effb}
+.pet-repro-icon-v576.lactation{color:#3f8ed4;background:#eef7ff}
+.pet-repro-icon-v576.rest{color:#ef760d;background:#fff3e8}
+.pet-repro-icon-v576.soon{color:#d99a06;background:#fff8df}
+.pet-repro-icon-v576.ready{color:#3d8d53;background:#eef8f0}
+.pet-repro-icon-v576.nonbreeding,
+.pet-repro-icon-v576.sterilized{color:#77716a;background:#f2f0ed}
+
+.pet-repro-line-v576{
+ display:flex;align-items:center;gap:5px;flex-wrap:wrap;
+ margin-top:5px;font-size:10px;line-height:1.25;
+}
+.pet-repro-pill-v576{
+ display:inline-flex;align-items:center;gap:4px;
+ padding:3px 7px;border-radius:999px;font-weight:800;
+}
+.pet-repro-pill-v576.heat{background:#ffe7ef;color:#e64e7d}
+.pet-repro-pill-v576.pregnant{background:#f1e8f8;color:#7e50aa}
+.pet-repro-pill-v576.lactation{background:#e7f3fd;color:#337dbb}
+.pet-repro-pill-v576.rest{background:#fff0df;color:#d66809}
+.pet-repro-pill-v576.soon{background:#fff4cf;color:#b77d00}
+.pet-repro-pill-v576.ready{background:#e8f4ea;color:#337845}
+.pet-repro-pill-v576.nonbreeding,
+.pet-repro-pill-v576.sterilized{background:#eeece8;color:#706a64}
+.pet-repro-date-v576{color:#74695f}
+
+@media(max-width:390px){
+ .nav-repro-v575 b{font-size:29px!important}
+ .pet-card-top-icons-v576{right:7px;top:7px;gap:4px}
+ .pet-card-top-icons-v576 .dog-alert-bell-v561,
+ .pet-repro-icon-v576{width:27px;height:27px}
+}
+
+
+.pet-detail-repro-v576{
+ margin-top:10px!important;border-color:#f0c7d3!important;background:#fff8fa!important;
+}
+.pet-detail-repro-head-v576{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.pet-detail-repro-head-v576 b{font-size:12px}
+.female-symbol-detail-v576{
+ color:#ef5f8d;font-family:Arial,sans-serif;font-weight:900;font-size:24px;
+ -webkit-text-stroke:.6px #ef5f8d;line-height:1;
+}
+.pet-detail-repro-head-v576 .pet-repro-pill-v576{margin-left:auto}
+
+
+/* v57.7 · indicadores reproductivos interactivos */
+button.repro-summary-item-v575{appearance:none;-webkit-appearance:none;font-family:inherit;cursor:pointer;width:100%}
+button.repro-summary-item-v575:active{transform:scale(.98)}
+button.repro-summary-item-v575.active-filter-v577{border-width:2px;box-shadow:0 4px 14px rgba(77,52,31,.12)}
+button.repro-summary-item-v575.active-filter-v577.pregnant{background:#f5edfb}
+button.repro-summary-item-v575.active-filter-v577.lactation{background:#edf7ff}
+button.repro-summary-item-v575.active-filter-v577.rest{background:#fff2e6}
+button.repro-summary-item-v575.active-filter-v577.heat{background:#fff0f5}
+button.repro-summary-item-v575.active-filter-v577.soon{background:#fff7dd}
+button.repro-summary-item-v575.active-filter-v577.ready{background:#eef8f0}
+button.repro-summary-item-v575.active-filter-v577.inactive{background:#f2f0ed}
+
+
+/* v57.8 · Calendario: campos Desde/Hasta contenidos y alineados */
+#calendarMonthRange.calendar-range-v56,
+#calendarDateRange.calendar-range-v56{
+  display:grid!important;
+  grid-template-columns:minmax(0,calc(50% - 6px)) minmax(0,calc(50% - 6px))!important;
+  column-gap:12px!important;
+  width:100%!important;
+  max-width:100%!important;
+  padding:0!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+  overflow:visible!important;
+}
+
+#calendarMonthRange .field,
+#calendarDateRange .field{
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  margin:0!important;
+  padding:0!important;
+  box-sizing:border-box!important;
+  overflow:visible!important;
+}
+
+#calendarMonthFrom,
+#calendarMonthTo,
+#calendarDateFrom,
+#calendarDateTo{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  height:48px!important;
+  padding:0 8px!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+  font-size:14px!important;
+  line-height:1.1!important;
+  text-align:center!important;
+  border-radius:11px!important;
+  overflow:hidden!important;
+}
+
+#calendarMonthRange label,
+#calendarDateRange label{
+  display:block!important;
+  margin-bottom:5px!important;
+  font-size:12px!important;
+}
+
+@media(max-width:430px){
+  #calendarMonthRange.calendar-range-v56,
+  #calendarDateRange.calendar-range-v56{
+    grid-template-columns:minmax(0,calc(50% - 5px)) minmax(0,calc(50% - 5px))!important;
+    column-gap:10px!important;
+  }
+  #calendarMonthFrom,
+  #calendarMonthTo,
+  #calendarDateFrom,
+  #calendarDateTo{
+    height:46px!important;
+    padding:0 5px!important;
+    font-size:12.5px!important;
+  }
+}
+
+@media(max-width:360px){
+  #calendarMonthRange.calendar-range-v56,
+  #calendarDateRange.calendar-range-v56{
+    column-gap:8px!important;
+    grid-template-columns:minmax(0,calc(50% - 4px)) minmax(0,calc(50% - 4px))!important;
+  }
+  #calendarMonthFrom,
+  #calendarMonthTo,
+  #calendarDateFrom,
+  #calendarDateTo{
+    font-size:11.5px!important;
+    padding:0 3px!important;
+  }
+}
+
+
+/* v57.9 · Barra inferior: iconos uniformes y perfectamente alineados */
+.bottom-nav{
+  align-items:stretch!important;
+}
+.bottom-nav button,
+.bottom-nav .nav-repro-v575{
+  display:grid!important;
+  grid-template-rows:38px 22px!important;
+  align-items:center!important;
+  justify-items:center!important;
+  align-content:center!important;
+  gap:2px!important;
+  padding-top:8px!important;
+  padding-bottom:8px!important;
+  line-height:1!important;
+}
+.bottom-nav button > span:first-child,
+.bottom-nav button > b:first-child,
+.bottom-nav .nav-repro-v575 > b:first-child{
+  width:38px!important;
+  height:38px!important;
+  min-width:38px!important;
+  min-height:38px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  margin:0!important;
+  padding:0!important;
+  line-height:38px!important;
+  font-size:30px!important;
+  transform:none!important;
+}
+.bottom-nav .nav-repro-v575 > b:first-child{
+  font-family:Arial,sans-serif!important;
+  font-size:31px!important;
+  font-weight:900!important;
+  -webkit-text-stroke:.8px #ef5f8d!important;
+}
+.bottom-nav button > span:last-child,
+.bottom-nav .nav-repro-v575 > span:last-child{
+  height:22px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  margin:0!important;
+  padding:0!important;
+  font-size:12px!important;
+  font-weight:700!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+}
+
+
+.repro-home-actions-v580{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+.repro-home-plus-v580{width:30px;height:30px;min-width:30px;border-radius:50%;border:1px solid #e7c98c;background:#fff8e8;color:#b77b08;display:grid;place-items:center;padding:0;margin:0;font-family:Arial,sans-serif;font-size:23px;font-weight:700;line-height:1}
+.repro-home-plus-v580:active{transform:scale(.95)}
+
+/* v58.1 · Calendario: rango único visible y texto centrado */
+#calendarMonthRange.hidden,
+#calendarDateRange.hidden{
+  display:none!important;
+}
+
+#calendarMonthRange.calendar-range-v56:not(.hidden),
+#calendarDateRange.calendar-range-v56:not(.hidden){
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  gap:12px!important;
+  width:100%!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+}
+
+#calendarMonthRange .field,
+#calendarDateRange .field{
+  min-width:0!important;
+  width:100%!important;
+  max-width:100%!important;
+  overflow:hidden!important;
+}
+
+#calendarMonthFrom,
+#calendarMonthTo,
+#calendarDateFrom,
+#calendarDateTo{
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  height:50px!important;
+  box-sizing:border-box!important;
+  padding:0 7px!important;
+  margin:0!important;
+  text-align:center!important;
+  font-size:15px!important;
+  line-height:50px!important;
+}
+
+/* iPhone / Safari centers the native month/date text with this internal value */
+#calendarMonthFrom::-webkit-date-and-time-value,
+#calendarMonthTo::-webkit-date-and-time-value,
+#calendarDateFrom::-webkit-date-and-time-value,
+#calendarDateTo::-webkit-date-and-time-value{
+  text-align:center!important;
+  width:100%!important;
+  min-width:100%!important;
+  margin:0!important;
+  padding:0!important;
+  font-size:15px!important;
+}
+
+@media(max-width:430px){
+  #calendarMonthRange.calendar-range-v56:not(.hidden),
+  #calendarDateRange.calendar-range-v56:not(.hidden){
+    gap:9px!important;
+  }
+  #calendarMonthFrom,
+  #calendarMonthTo,
+  #calendarDateFrom,
+  #calendarDateTo,
+  #calendarMonthFrom::-webkit-date-and-time-value,
+  #calendarMonthTo::-webkit-date-and-time-value,
+  #calendarDateFrom::-webkit-date-and-time-value,
+  #calendarDateTo::-webkit-date-and-time-value{
+    font-size:14px!important;
+  }
+}
+
+/* v58.1 · Barra inferior Hembras */
+.bottom-nav .nav-repro-v575{
+  gap:5px!important;
+}
+.bottom-nav .nav-repro-v575 > b:first-child{
+  font-size:32px!important;
+  line-height:34px!important;
+  transform:translateY(-2px)!important;
+}
+.bottom-nav .nav-repro-v575 > span:last-child{
+  font-size:12.5px!important;
+  font-weight:700!important;
+  line-height:1!important;
+}
+
+/* v58.1 · Inicio: resumen reproductivo compacto, sin listado individual */
+.home-repro-summary-v581{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:6px;
+  margin-top:9px;
+}
+.home-repro-summary-item-v581{
+  min-width:0;
+  border:1px solid #eadcc6;
+  border-radius:11px;
+  padding:7px 3px;
+  background:#fffdf8;
+  text-align:center;
+}
+.home-repro-summary-item-v581 span{
+  display:block;
+  font-size:8.5px;
+  line-height:1.15;
+  color:#6f655c;
+}
+.home-repro-summary-item-v581 b{
+  display:block;
+  font-size:15px;
+  margin-top:3px;
+  color:#4d3928;
+}
+@media(max-width:390px){
+  .home-repro-summary-v581{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+  .home-repro-summary-item-v581{padding:6px 2px}
+  .home-repro-summary-item-v581 span{font-size:7.8px}
+}
+
+
+/* v58.2 · Barra inferior en una única línea: icono + nombre */
+.bottom-nav button,
+.bottom-nav .nav-repro-v575{
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:center!important;
+  align-content:center!important;
+  gap:5px!important;
+  padding:8px 3px!important;
+  white-space:nowrap!important;
+  line-height:1!important;
+}
+
+.bottom-nav button > span:first-child,
+.bottom-nav button > b:first-child,
+.bottom-nav .nav-repro-v575 > b:first-child{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:auto!important;
+  height:auto!important;
+  min-width:0!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  font-size:21px!important;
+  line-height:1!important;
+  transform:none!important;
+}
+
+.bottom-nav .nav-repro-v575 > b:first-child{
+  font-size:23px!important;
+  font-weight:900!important;
+}
+
+.bottom-nav button > span:last-child,
+.bottom-nav .nav-repro-v575 > span:last-child{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:auto!important;
+  height:auto!important;
+  margin:0!important;
+  padding:0!important;
+  font-size:10.5px!important;
+  font-weight:700!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+}
+
+@media(max-width:390px){
+  .bottom-nav button,
+  .bottom-nav .nav-repro-v575{gap:3px!important;padding-left:2px!important;padding-right:2px!important}
+  .bottom-nav button > span:first-child,
+  .bottom-nav button > b:first-child,
+  .bottom-nav .nav-repro-v575 > b:first-child{font-size:19px!important}
+  .bottom-nav button > span:last-child,
+  .bottom-nav .nav-repro-v575 > span:last-child{font-size:9.4px!important}
+}
+
+
+/* v58.3 · Calendario: Desde/Hasta mes más estrechos y contenidos */
+#calendarMonthRange.calendar-range-v56:not(.hidden){
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  column-gap:14px!important;
+  width:calc(100% - 18px)!important;
+  max-width:calc(100% - 18px)!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  padding:0!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+}
+#calendarMonthRange .field{
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+}
+#calendarMonthFrom,
+#calendarMonthTo{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  height:46px!important;
+  margin:0!important;
+  padding:0 4px!important;
+  font-size:14px!important;
+  text-align:center!important;
+  border-radius:10px!important;
+}
+#calendarMonthFrom::-webkit-date-and-time-value,
+#calendarMonthTo::-webkit-date-and-time-value{
+  width:100%!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:0!important;
+  text-align:center!important;
+  font-size:14px!important;
+}
+@media(max-width:390px){
+ #calendarMonthRange.calendar-range-v56:not(.hidden){
+   width:calc(100% - 24px)!important;
+   max-width:calc(100% - 24px)!important;
+   column-gap:12px!important;
+ }
+ #calendarMonthFrom,#calendarMonthTo{
+   height:44px!important;
+   padding:0 2px!important;
+   font-size:13px!important;
+ }
+ #calendarMonthFrom::-webkit-date-and-time-value,
+ #calendarMonthTo::-webkit-date-and-time-value{font-size:13px!important}
+}
+
+
+/* v58.4 · Desde/Hasta mes: cuadros más cortos para evitar solape */
+#calendarMonthRange.calendar-range-v56:not(.hidden){
+  grid-template-columns:minmax(0,44%) minmax(0,44%)!important;
+  justify-content:space-between!important;
+  column-gap:0!important;
+  width:100%!important;
+  max-width:100%!important;
+  padding:0 14px!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+}
+#calendarMonthRange .field{
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+}
+#calendarMonthFrom,
+#calendarMonthTo{
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  padding-left:3px!important;
+  padding-right:3px!important;
+}
+@media(max-width:390px){
+ #calendarMonthRange.calendar-range-v56:not(.hidden){
+   grid-template-columns:minmax(0,42%) minmax(0,42%)!important;
+   padding-left:12px!important;
+   padding-right:12px!important;
+ }
+}
+
+
+/* v58.5 · Corrección definitiva calendario + barra inferior */
+
+/* Calendario: dos columnas completas, sin recorte ni solape */
+#calendarMonthRange.calendar-range-v56:not(.hidden){
+  display:grid!important;
+  grid-template-columns:calc((100% - 16px)/2) calc((100% - 16px)/2)!important;
+  gap:16px!important;
+  width:100%!important;
+  max-width:100%!important;
+  margin:0!important;
+  padding:0 10px!important;
+  box-sizing:border-box!important;
+  overflow:visible!important;
+}
+#calendarMonthRange .field{
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  margin:0!important;
+  padding:0!important;
+  box-sizing:border-box!important;
+  overflow:visible!important;
+}
+#calendarMonthFrom,#calendarMonthTo{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  height:46px!important;
+  margin:0!important;
+  padding:0 2px!important;
+  box-sizing:border-box!important;
+  font-size:13px!important;
+  text-align:center!important;
+  border-radius:10px!important;
+}
+#calendarMonthFrom::-webkit-date-and-time-value,
+#calendarMonthTo::-webkit-date-and-time-value{
+  width:100%!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:0!important;
+  text-align:center!important;
+  font-size:13px!important;
+}
+
+/* Barra inferior: SIEMPRE una única línea */
+.bottom-nav{
+  display:flex!important;
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+}
+.bottom-nav button,
+.bottom-nav .nav-repro-v575{
+  flex:1 1 0!important;
+  min-width:0!important;
+  display:flex!important;
+  flex-direction:row!important;
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:3px!important;
+  padding:9px 1px!important;
+  white-space:nowrap!important;
+}
+.bottom-nav button > span:first-child,
+.bottom-nav button > b:first-child,
+.bottom-nav .nav-repro-v575 > b:first-child{
+  display:inline-flex!important;
+  width:auto!important;height:auto!important;min-width:0!important;min-height:0!important;
+  margin:0!important;padding:0!important;
+  font-size:18px!important;line-height:1!important;
+  transform:none!important;
+}
+.bottom-nav button > span:last-child,
+.bottom-nav .nav-repro-v575 > span:last-child{
+  display:inline!important;
+  width:auto!important;height:auto!important;
+  margin:0!important;padding:0!important;
+  font-size:9.5px!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+}
+.bottom-nav .nav-repro-v575 > b:first-child{font-size:20px!important}
+@media(max-width:390px){
+  .bottom-nav button,.bottom-nav .nav-repro-v575{gap:2px!important;padding-left:0!important;padding-right:0!important}
+  .bottom-nav button > span:last-child,.bottom-nav .nav-repro-v575 > span:last-child{font-size:8.8px!important}
+  .bottom-nav button > span:first-child,.bottom-nav button > b:first-child,.bottom-nav .nav-repro-v575 > b:first-child{font-size:17px!important}
+}
+
+
+/* v58.6 · Hembras solo visible en modo Criador / Profesional */
+body.mode-owner-v55 .cm-bottom-nav [data-breeder-only="1"]{
+  display:none!important;
+}
+body.mode-breeder-v55 .cm-bottom-nav [data-breeder-only="1"]{
+  display:flex!important;
+}
+
+
+/* Petoria v1.0 · cabecera oficial */
+.petoria-brand-v10{
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding-top:0;
+}
+.petoria-pawmark-v10{
+  width:49px;
+  height:43px;
+  margin:0 auto 1px;
+}
+.petoria-pawmark-v10 svg{
+  width:100%;
+  height:100%;
+  display:block;
+  overflow:visible;
+  fill:#B88425;
+  filter:drop-shadow(0 1px 0 rgba(255,255,255,.7));
+}
+.petoria-pawmark-v10 .petoria-heart-v10{
+  fill:#D96683;
+  stroke:#fff3e8;
+  stroke-width:2.5px;
+}
+.petoria-wordmark-v10{
+  font-family:Georgia,"Times New Roman",serif!important;
+  font-size:38px!important;
+  line-height:.98!important;
+  font-weight:400!important;
+  letter-spacing:.01em!important;
+  white-space:nowrap!important;
+  background:linear-gradient(180deg,#d8ad52 0%,#a86f16 48%,#d1a145 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent!important;
+  text-shadow:0 1px 0 rgba(255,255,255,.65);
+}
+.petoria-tagline-v10{
+  margin-top:6px;
+  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif!important;
+  font-size:11.5px!important;
+  line-height:1.1!important;
+  font-weight:500!important;
+  letter-spacing:.13em!important;
+  color:#D35D7C!important;
+  white-space:nowrap!important;
+}
+.petoria-divider-v10{
+  width:190px;
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  gap:10px;
+  align-items:center;
+  margin-top:9px;
+}
+.petoria-divider-v10 span{
+  height:1px;
+  background:linear-gradient(90deg,transparent,#BE8C32 35%,#BE8C32 100%);
+}
+.petoria-divider-v10 span:last-child{
+  background:linear-gradient(90deg,#BE8C32 0%,#BE8C32 65%,transparent);
+}
+.petoria-divider-v10 b{
+  color:#B8862C;
+  font-size:12px;
+  line-height:1;
+}
+.cm-hero-ref{
+  min-height:190px!important;
+  padding-top:26px!important;
+  padding-bottom:14px!important;
+}
+@media(max-width:390px){
+  .petoria-wordmark-v10{font-size:34px!important}
+  .petoria-tagline-v10{font-size:10.2px!important;letter-spacing:.105em!important}
+  .petoria-pawmark-v10{width:45px;height:40px}
+  .petoria-divider-v10{width:170px}
+}
+
+</style>
+<meta name="description" content="Petoria · La libreta digital de tus mascotas">
+<meta property="og:title" content="Petoria">
+<meta property="og:description" content="La libreta digital de tus mascotas">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Petoria">
+<meta name="twitter:description" content="La libreta digital de tus mascotas">
+<meta property="og:image" content="https://libreta-control-canino.netlify.app/preview-libretacanina.jpg?v=15">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/jpeg">
+<meta name="twitter:image" content="https://libreta-control-canino.netlify.app/preview-libretacanina.jpg?v=15">
+
+<style id="petoriaFirstStartStyles">
+#petoriaFirstStart{
+  position:fixed;inset:0;z-index:999999;background:#fff8ec;
+  display:none;align-items:center;justify-content:center;padding:24px;
+  overflow:auto;font-family:inherit;
+}
+#petoriaFirstStart.show{display:flex}
+.petoria-first-card{width:min(520px,100%);text-align:center}
+.petoria-first-logo{width:190px;max-width:62vw;height:auto;display:block;margin:0 auto 12px}
+.petoria-first-title{font-size:27px;line-height:1.18;font-weight:800;color:#6f4a2f;margin:8px 0 7px}
+.petoria-first-sub{font-size:14px;line-height:1.45;color:#967462;margin:0 0 22px}
+.petoria-first-option{
+  width:100%;display:grid;grid-template-columns:56px 1fr 24px;gap:13px;align-items:center;
+  border:1px solid #e7c999;border-radius:20px;background:#fffdf9;padding:16px;margin:0 0 13px;
+  text-align:left;color:#49382e;font-family:inherit;box-shadow:0 5px 18px rgba(111,74,47,.07)
+}
+.petoria-first-option:active{transform:scale(.99)}
+.petoria-first-icon{width:54px;height:54px;border-radius:17px;background:#fde4df;border:1px solid #f2b7ae;display:grid;place-items:center;font-size:28px}
+.petoria-first-copy b{display:block;font-size:18px;color:#8a5b2f;margin-bottom:4px}
+.petoria-first-copy small{display:block;font-size:12.5px;line-height:1.4;color:#80685a}
+.petoria-first-arrow{font-size:31px;color:#c99a54;text-align:center}
+.petoria-first-note{font-size:11.5px;color:#a48776;margin-top:14px}
+</style>
+
+</head>
+<body>
+
+<div id="petoriaFirstStart" aria-modal="true" role="dialog" aria-label="Elegir modo de Petoria">
+  <div class="petoria-first-card">
+    <img class="petoria-first-logo" src="petoria-logo.png" alt="Petoria">
+    <div class="petoria-first-title">¿Cómo vas a utilizar Petoria?</div>
+    <div class="petoria-first-sub">Elige el modo que mejor se adapte a ti. Esta pantalla solo aparece la primera vez.</div>
+
+    <button id="petoriaChooseParticular" class="petoria-first-option" type="button">
+      <span class="petoria-first-icon">🐾</span>
+      <span class="petoria-first-copy"><b>Particular</b><small>Para el cuidado, salud, crecimiento, calendario, avisos y documentos de tus mascotas.</small></span>
+      <span class="petoria-first-arrow">›</span>
+    </button>
+
+    <button id="petoriaChooseBreeder" class="petoria-first-option" type="button">
+      <span class="petoria-first-icon">👑</span>
+      <span class="petoria-first-copy"><b>Criador / Profesional</b><small>Todo lo anterior más reproducción, camadas, cachorros, contratos y herramientas profesionales.</small></span>
+      <span class="petoria-first-arrow">›</span>
+    </button>
+
+    <div class="petoria-first-note">Después podrás cambiar el modo cuando quieras desde Ajustes.</div>
+  </div>
+</div>
+
+<div class="app">
+<header class="cover">
+<div class="brand-center">
+  <div id="customLogoWrap" class="custom-logo-wrap hidden"><img id="customLogoImg" class="custom-logo-img" alt="Logo"></div>
+  <div class="main-title">Petoria</div>
+  <div class="subtitle">Salud, documentos y seguimiento</div>
+</div>
+</header>
+
+<nav class="nav cm-bottom-nav">
+<button data-page="inicio" class="active"><b>⌂</b><span>Inicio</span></button>
+<button data-page="perros"><b>🐾</b><span>Mascotas</span></button>
+<button data-page="estado-reproductivo" data-breeder-only="1" class="nav-repro-v575"><b>♀</b><span>Hembras</span></button>
+<button data-page="calendario"><b>🗓️</b><span>Calendario</span></button>
+<button data-page="ajustes"><b>⚙</b><span>Ajustes</span></button>
+</nav>
+
+<main>
+<section id="inicio" class="page active">
+<div class="cm-hero cm-hero-ref">
+  <button id="cmMenuBtn" class="cm-round cm-menu-ref" type="button" aria-label="Menú">☰</button>
+  <div class="cm-brand cm-brand-ref"><div id="cmHeroLogoWrap" class="hidden" style="display:none!important"><img id="cmHeroLogoImg" alt=""></div>
+    <div class="petoria-brand-v10">
+      <div class="petoria-pawmark-v10" aria-hidden="true">
+        <svg viewBox="0 0 100 88" role="img">
+          <ellipse cx="25" cy="23" rx="11" ry="16"></ellipse>
+          <ellipse cx="47" cy="15" rx="11" ry="16"></ellipse>
+          <ellipse cx="69" cy="23" rx="11" ry="16"></ellipse>
+          <ellipse cx="84" cy="43" rx="10" ry="14"></ellipse>
+          <path d="M20 65c0-18 14-31 30-31s30 13 30 31c0 13-11 19-30 19S20 78 20 65z"></path>
+          <path class="petoria-heart-v10" d="M50 73 36 59c-8-8-1-20 9-15 2 1 4 3 5 5 1-2 3-4 5-5 10-5 17 7 9 15z"></path>
+        </svg>
+      </div>
+      <div class="petoria-wordmark-v10">PETORIA</div>
+      <div class="petoria-tagline-v10">TU MASCOTA, SIEMPRE AL DÍA</div>
+      <div class="petoria-divider-v10"><span></span><b>♥</b><span></span></div>
+    </div>
+  </div>
+  <button id="cmAlertsBtn" class="cm-round cm-alert-btn cm-bell-ref" type="button" aria-label="Avisos">♧<span id="cmAlertCount">0</span></button>
+</div>
+
+<div class="card cm-panel">
+  <div class="cm-panel-head"><div><div class="name">🗓️ PRÓXIMOS AVISOS</div><div class="small">Vista de 7 días</div></div><button id="cmAllAlerts" class="cm-link" type="button">Ver todos ↓</button></div>
+  <div id="cmAlertsList"></div>
+</div>
+
+<div id="breederFemalesPanelV57" class="card cm-panel breeder-females-v57" data-breeder-only="1">
+  <div class="cm-panel-head">
+    <button id="openReproStatusV575" class="repro-home-title-v575" type="button">
+      <span class="female-symbol-home-v575">♀</span>
+      <span><span class="name">ESTADO REPRODUCTIVO</span><span class="small">Hembras reproductoras · Ver detalle</span></span>
+    </button>
+    <div class="repro-home-actions-v580">
+<span id="breederFemalesCountV57" class="badge">0</span>
+<button id="openReproPlusV580" class="repro-home-plus-v580" type="button" aria-label="Abrir Hembras">+</button>
+</div>
+  </div>
+  <div id="breederFemalesListV57" class="home-repro-summary-v581"></div>
+</div>
+
+<div class="card cm-panel">
+  <div class="cm-panel-head"><div class="name">🐾 MIS MASCOTAS</div><button id="cmAllPets" class="cm-link" type="button">Ver todas ›</button></div>
+  <div id="cmPetCards" class="cm-pet-cards"></div>
+  <div class="cm-home-actions">
+    <button id="cmAddPet" class="btn cm-primary" type="button">⊕ Añadir mascota</button>
+    
+  </div>
+</div>
+
+<div class="cm-hidden">
+<div class="card smart-alerts-card">
+  <div class="pagehead">
+    <div>
+      <div class="name">Próximos avisos</div>
+      <div class="small">Vacunas, desparasitaciones, tratamientos, revisiones, celos, partos y otros eventos.</div>
+    </div>
+    <button id="goCalendar" class="btn gold">Ver calendario</button>
+  </div>
+  <div id="smartAlerts"></div>
+</div>
+
+<div id="installNotice" class="card" style="display:none">
+  <div class="name">Protege tus datos</div>
+  <div class="small">Si vas a añadir esta libreta a la pantalla de inicio o cambiar de móvil, crea antes una copia completa desde Copia.</div>
+</div>
+
+<div class="notebook-title">Mi libreta <span>🐾</span></div>
+<div class="card">
+<div class="name">Mis mascotas</div>
+<div id="homeDogPhotos" class="home-dogs"></div>
+</div>
+<div class="quick">
+ <div class="card"><div id="homeAlerts" class="big">0</div><div class="small">avisos próximos</div></div>
+ <div class="card"><div id="homeDocs" class="big">0</div><div class="small">documentos</div></div>
+</div>
+<div class="card"><div class="name">Próximamente</div><div id="homeNext" class="small">No hay avisos pendientes.</div></div>
+<div class="card today-card">
+<div class="name">Hoy</div>
+<div id="todaySummary" class="small">Todo al día.</div>
+</div>
+
+
+
+
+</div>
+</section>
+
+<section id="perros" class="page">
+<div class="notebook-title">Mis mascotas <span id="dogCount" class="badge">0</span></div>
+<div class="card pet-search-v575">
+  <div class="pet-search-row-v575">
+    <div class="pet-search-input-v575"><span>⌕</span><input id="petSearchNameV575" type="search" placeholder="Buscar por nombre"></div>
+    <select id="petSearchSexV575" aria-label="Filtrar por sexo">
+      <option value="">Todos</option>
+      <option value="Macho">Machos</option>
+      <option value="Hembra">Hembras</option>
+    </select>
+  </div>
+</div>
+<div id="dogList"></div>
+</section>
+
+<section id="avisos" class="page">
+<div class="notebook-title">Avisos</div>
+<div class="notice">La libreta te muestra lo pendiente. Para que el iPhone te avise aunque la app esté cerrada, usa el botón “Calendario” de cada aviso y guárdalo en Apple Calendar.</div>
+<div id="alertList"></div>
+</section>
+
+
+<section id="estado-reproductivo" class="page" data-breeder-only="1">
+  <div class="repro-page-head-v575">
+    <div class="repro-page-title-v575"><span class="female-symbol-v575">♀</span><div><div class="name">ESTADO REPRODUCTIVO</div><div class="small">Resumen de todas las hembras</div></div></div>
+    <span id="reproTotalV575" class="badge">0</span>
+  </div>
+
+  <div id="reproSummaryV575" class="repro-summary-v575"></div>
+
+  <div class="card repro-full-card-v575">
+    <div id="reproFullListV575"></div>
+  </div>
+
+
+  <div class="card repro-info-v575">
+    <b>ⓘ Información</b>
+    <div class="small">El estado se actualiza automáticamente según los registros de reproducción, camadas y el plan reproductivo configurado para cada hembra.</div>
+  </div>
+</section>
+
+<section id="calendario" class="page">
+<div class="notebook-title">Calendario</div>
+<div class="card calendar-filter-card-v56">
+  <div class="field">
+    <label>1 · Filtrar por mascota</label>
+    <select id="calendarDog"><option value="">Todas</option></select>
+  </div>
+  <div class="field">
+    <label>2 · Tipo de evento</label>
+    <select id="calendarType">
+      <option value="">Todos</option>
+      <option value="Salud">Salud</option>
+      <option value="Reproducción">Reproducción</option>
+      <option value="Otro">Otro</option>
+    </select>
+  </div>
+  <div class="field">
+    <label>3 · Periodo de búsqueda</label>
+    <select id="calendarRangeMode">
+      <option value="months">De mes a mes</option>
+      <option value="dates">De fecha a fecha</option>
+    </select>
+  </div>
+  <div id="calendarMonthRange" class="calendar-range-v56">
+    <div class="field"><label>Desde mes</label><input id="calendarMonthFrom" type="month"></div>
+    <div class="field"><label>Hasta mes</label><input id="calendarMonthTo" type="month"></div>
+  </div>
+  <div id="calendarDateRange" class="calendar-range-v56 hidden">
+    <div class="field"><label>Desde fecha</label><input id="calendarDateFrom" type="date"></div>
+    <div class="field"><label>Hasta fecha</label><input id="calendarDateTo" type="date"></div>
+  </div>
+  <div id="calendarRangeHelp" class="small calendar-range-help-v56">Máximo 6 meses por búsqueda.</div>
+</div>
+<div id="calendarLegend" class="calendar-legend">
+<span class="cal-dot overdue"></span> Vencido
+<span class="cal-dot today"></span> Hoy
+<span class="cal-dot upcoming"></span> Próximo
+</div>
+<div id="calendarList"></div>
+</section>
+
+<section id="historial" class="page">
+<div class="notebook-title">Historial</div>
+<div id="history"></div>
+</section>
+
+
+<section id="buscar" class="page">
+<div class="notebook-title">Buscar</div>
+<div class="card">
+  <div class="field"><label>Buscar por nombre, microchip, especie, raza o documento</label><input id="searchInput" type="search" placeholder="Escribe para buscar..."></div>
+</div>
+<div id="searchResults"></div>
+</section>
+
+<section id="ajustes" class="page">
+<div class="notebook-title">Ajustes <span id="appVersion" class="badge">v1.0</span></div>
+<div hidden aria-hidden="true">
+  <input id="logoInput" type="file" accept="image/*">
+  <button id="removeLogo" type="button"></button>
+</div>
+
+<div class="card settings-card" data-breeder-only="1">
+<div class="name">Datos habituales para contratos</div>
+<div class="small">Se utilizan únicamente en el modo Criador / Profesional para rellenar automáticamente los contratos.</div>
+<div class="field"><label>Nombre y apellidos</label><input id="sellerName"></div>
+<div class="grid">
+<div class="field"><label>DNI</label><input id="sellerDni"></div>
+<div class="field"><label>Teléfono</label><input id="sellerPhone"></div>
+</div>
+<div class="field"><label>Domicilio</label><input id="sellerAddress"></div>
+<div class="field"><label>Email</label><input id="sellerEmail" type="email"></div>
+<button id="saveSeller" class="btn primary">Guardar datos de la vendedora</button>
+</div>
+
+
+<div class="card settings-card mode-card-v55">
+  <div class="name">Modo de uso</div>
+  <div class="small">Elige cómo utilizas Petoria. Puedes cambiarlo cuando quieras sin perder ningún dato.</div>
+
+  <input id="appMode" type="hidden" value="particular">
+
+  <div class="mode-options-v55">
+    <button id="modeOwnerV55" class="mode-option-v55" type="button" data-mode-value="particular">
+      <span class="mode-icon-v55">🐾</span>
+      <span class="mode-copy-v55">
+        <b>Particular</b>
+        <small>Salud, crecimiento, calendario, avisos, documentos, galería y seguimiento de tus mascotas.</small>
+      </span>
+      <span class="mode-check-v55">✓</span>
+    </button>
+
+    <button id="modeBreederV55" class="mode-option-v55" type="button" data-mode-value="breeder">
+      <span class="mode-icon-v55">👑</span>
+      <span class="mode-copy-v55">
+        <b>Criador / Profesional</b>
+        <small>Todo lo anterior más reproducción, camadas, cachorros, contratos y herramientas profesionales.</small>
+      </span>
+      <span class="mode-check-v55">✓</span>
+    </button>
+  </div>
+
+  <div id="modeHelp" class="mode-help-v55"></div>
+  <button id="saveMode" class="btn primary" type="button">Guardar modo</button>
+</div>
+<div class="card settings-card">
+<div class="name">Sincronización entre dispositivos</div>
+<div class="small">La libreta está preparada para añadir cuenta y nube en una siguiente fase. Por ahora los datos se guardan localmente en cada móvil.</div>
+</div>
+
+
+<div class="settings-copy-v574">
+  <div class="settings-divider-v574"></div>
+  <div class="notebook-title settings-copy-title-v574">Copia de seguridad</div>
+  
+
+  <div class="card copy-main-card-v545">
+    <div class="copy-icon-v545">☁️</div>
+    <div class="copy-main-text-v545">
+      <div class="name">Guardar copia</div>
+      <div class="small">Guarda todas tus mascotas, fotos, salud, crecimiento, reproducción, camadas, documentos y ajustes en un único archivo.</div>
+    </div>
+    <button id="migrationExport" class="btn primary copy-big-btn-v545" type="button">Guardar copia</button>
+    <div id="backupStatus" class="small copy-status-v545"></div>
+  </div>
+
+  <div class="card copy-main-card-v545">
+    <div class="copy-icon-v545">↩️</div>
+    <div class="copy-main-text-v545">
+      <div class="name">Restaurar datos</div>
+      <div class="small">Selecciona una copia guardada anteriormente. Antes de restaurarla, la aplicación te pedirá confirmación.</div>
+    </div>
+    <button id="migrationImport" class="btn gold copy-big-btn-v545" type="button">Importar copia</button>
+    <input id="migrationFile" type="file" accept=".json,application/json" hidden>
+  </div>
+
+  <div class="card copy-info-card-v545">
+    <div class="name">Información</div>
+    <div class="copy-info-grid-v545">
+      <div><b id="copyPetCountV545">0</b><span>Mascotas</span></div>
+      <div><b id="copyLastDateV545">—</b><span>Última copia</span></div>
+      <div><b id="copyApproxSizeV545">—</b><span>Tamaño aprox.</span></div>
+    </div>
+  </div>
+
+  <details class="card copy-advanced-v545">
+    <summary>⚙️ Opciones avanzadas</summary>
+    <div class="copy-advanced-body-v545">
+      <div class="small">Estas opciones son solo para recuperación o compatibilidad con copias antiguas.</div>
+
+      <div class="copy-advanced-row-v545">
+        <div>
+          <b>Restaurar copia local de emergencia</b>
+          <div class="small">Recupera el último estado guardado automáticamente en este navegador.</div>
+        </div>
+        <button id="restoreEmergency" class="btn gold" type="button">Restaurar</button>
+      </div>
+
+      <div class="copy-advanced-row-v545">
+        <div>
+          <b>Exportación antigua</b>
+          <div class="small">Mantiene compatibilidad con las copias JSON de versiones anteriores.</div>
+        </div>
+        <button id="exportBtn" class="btn" type="button">Exportar JSON</button>
+      </div>
+
+      <div class="copy-advanced-row-v545">
+        <div>
+          <b>Importación antigua</b>
+          <div class="small">Importa una copia JSON creada con una versión anterior.</div>
+        </div>
+        <label class="btn" style="text-align:center">Importar JSON<input id="importFile" type="file" accept=".json,application/json" hidden></label>
+      </div>
+    </div>
+  </details>
+
+</div>
+</section>
+
+</main>
+
+<button id="addBtn" class="plus hidden" aria-label="Añadir mascota">+</button>
+</div>
+
+
+
+<div id="contractModal" class="modal"><div class="sheet">
+<div class="sheethead"><strong id="contractModalTitle">Contrato</strong><button class="x" data-close="contractModal">×</button></div>
+<form id="contractForm">
+<input id="contractType" type="hidden">
+<div class="notebook-title">Lugar y fecha</div>
+<div class="grid"><div class="field"><label>Localidad</label><input id="cPlace"></div><div class="field"><label>Fecha</label><input id="cDate" type="date"></div></div>
+<div class="notebook-title">Comprador</div>
+<div class="field"><label>Nombre y apellidos</label><input id="cBuyerName" required></div>
+<div class="grid"><div class="field"><label>DNI</label><input id="cBuyerDni"></div><div class="field"><label>Teléfono</label><input id="cBuyerPhone"></div></div>
+<div class="field"><label>Domicilio</label><input id="cBuyerAddress"></div>
+<div class="field"><label>Email</label><input id="cBuyerEmail" type="email"></div>
+<div class="notebook-title">Venta</div>
+<div class="field"><label>Precio (€)</label><input id="cPrice" type="number" step="0.01" inputmode="decimal"></div>
+<div class="field"><label>Otros datos / observaciones</label><textarea id="cObs"></textarea></div>
+<div id="breedingFields" class="hidden">
+<div class="notebook-title">Acuerdo de cría</div>
+<div class="small">Incluye derecho de elección de un cachorro de la primera camada, entrega a edad legal/veterinariamente recomendada y vigencia hasta recibir el cachorro pactado si la primera camada no fuera viable.</div>
+</div>
+<button class="btn primary" type="submit">Generar contrato</button>
+</form></div></div>
+
+<div id="contractPreviewModal" class="modal contract-doc-modal">
+  <div class="sheet contract-doc-sheet">
+    <div class="contract-doc-toolbar">
+      <button id="printContract" class="contract-doc-action" type="button">Imprimir / Guardar PDF</button>
+      <button id="closeContractPreviewBtn" class="contract-doc-action" type="button">Cerrar</button>
+    </div>
+    <div id="contractPreview" class="contract-paper">
+      <div class="contract-canvas-wrap">
+        <canvas id="contractCanvas" width="1024" height="1536"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="cropModal" class="modal"><div class="sheet" style="padding-left:14px;background:#f7f4ee">
+<div class="sheethead"><strong>Editar foto</strong><button class="x" data-close="cropModal">×</button></div>
+<div class="small" style="margin-bottom:10px">Mueve la imagen con el dedo y usa el control para acercar o alejar.</div>
+<div id="cropArea" class="crop-area">
+  <img id="cropImg" alt="Foto">
+  <div class="crop-mask"></div>
+</div>
+<div class="crop-controls">
+  <input id="cropZoom" type="range" min="1" max="3" step="0.01" value="1">
+  <button id="cropReset" class="btn gold" type="button">Centrar</button>
+</div>
+<div class="rowactions">
+  <button id="cropUse" class="btn primary" type="button">Usar esta foto</button>
+</div>
+</div></div>
+
+
+<div id="healthHistoryModal" class="modal">
+  <div class="sheet health-history-sheet">
+    <div class="sheethead"><strong>Historial de salud</strong><button id="closeHealthHistory" class="x" type="button">×</button></div>
+    <div id="healthHistoryPet" class="small" style="margin-bottom:10px"></div>
+    <div class="health-history-filters">
+      <button type="button" class="active" data-health-filter="">Todos</button>
+      <button type="button" data-health-filter="Vacuna">Vacunas</button>
+      <button type="button" data-health-filter="Desparasitación">Desparasitación</button>
+      <button type="button" data-health-filter="Tratamiento">Tratamientos</button>
+      <button type="button" data-health-filter="Veterinaria">Veterinario</button>
+      <button type="button" data-health-filter="Prueba">Pruebas</button>
+    </div>
+    <div id="healthHistoryList"></div>
+  </div>
+</div>
+
+<div id="dogModal" class="modal"><div class="sheet">
+<div class="sheethead"><strong id="dogModalTitle">Nueva mascota</strong><button class="x" data-close="dogModal">×</button></div>
+<form id="dogForm">
+<input type="hidden" id="dogId">
+<div class="field"><label>Nombre</label><input id="dogName" required></div>
+<div class="field"><label>Foto</label><input id="dogPhoto" type="file" accept="image/*">
+<div id="dogPhotoPreview" class="dog-photo-preview hidden"><div class="photo"><img id="dogPhotoPreviewImg" alt="Vista previa"></div><div class="small">Esta será la foto de la ficha.</div></div>
+</div>
+<div class="grid">
+<div class="field"><label>Fecha de nacimiento</label><input id="dogBirth" type="date"></div>
+<div class="field"><label>Sexo</label><select id="dogSex"><option value="">—</option><option>Macho</option><option>Hembra</option></select></div>
+<div class="field"><label>Especie</label><select id="dogSpecies"><option value="Perro">Perro</option><option value="Gato">Gato</option><option value="Otro">Otro</option></select></div><div class="field"><label>Raza</label><input id="dogBreed"></div>
+<div class="field"><label>Color</label><input id="dogColor"></div>
+<div class="field"><label>Microchip</label><input id="dogChip"></div>
+<div class="field"><label>Procedencia</label><input id="dogOrigin"></div>
+</div>
+<div class="field"><label>Observaciones</label><textarea id="dogNotes"></textarea></div>
+<div class="cm-savebar"><button class="btn cm-dark" type="submit">Guardar ficha</button></div>
+</form></div></div>
+
+
+<div id="detailModal" class="modal"><div class="sheet">
+<div class="sheethead"><strong id="detailTitle">Ficha</strong><button class="x" data-close="detailModal">×</button></div>
+<div id="detailHead"></div>
+<div id="cmPetShortcuts" class="cm-pet-shortcuts">
+  <button data-cm-inner="datos" type="button"><b>ⓘ</b><span>DATOS</span><small>Ficha general</small></button>
+  <button data-cm-inner="salud" type="button"><b>♡</b><span>SALUD</span><small>Vacunas y tratamientos</small></button>
+  <button data-cm-inner="crecimiento" type="button"><b>↗</b><span>CRECIMIENTO</span><small>Pesos y gráficas</small></button>
+  <button data-cm-inner="reproduccion" data-breeder-only="1" type="button"><b>🐾</b><span>REPRODUCCIÓN</span><small>Celo y montas</small></button>
+  <button data-cm-inner="documentos" type="button"><b>▤</b><span>DOCUMENTOS</span><small>Archivos y certificados</small></button>
+  <button data-cm-inner="contratos" data-breeder-only="1" type="button"><b>✎</b><span>CONTRATOS</span><small>Venta y cesión</small></button>
+</div>
+
+
+<div class="inner-tabs">
+<button class="active" data-inner="datos">Datos</button>
+<button data-inner="crecimiento">Crecimiento</button>
+<button data-inner="salud">Salud</button><button data-inner="veterinario">Veterinario</button>
+<button data-inner="documentos">Documentos</button><button data-inner="galeria">Galería</button><button data-inner="contratos" data-breeder-only="1">Contratos</button>
+<button data-inner="reproduccion" data-breeder-only="1">Reproducción</button><button data-inner="camadas" data-breeder-only="1">Camadas</button>
+<button data-inner="notas">Notas</button>
+</div>
+
+<section id="inner-datos" class="inner-page active">
+
+
+<div id="dataPanel"></div>
+<div class="rowactions"><button id="editDog" class="btn gold">Editar mascota</button><button id="exportDog" class="btn gold">Exportar ficha</button><button id="deleteDog" class="btn danger">Eliminar</button></div>
+</section>
+
+<section id="inner-crecimiento" class="inner-page">
+<div class="rowactions"><button id="newMeasure" class="btn gold">+ Nuevo control</button></div>
+<div id="growthSummaryV54"></div>
+<div class="chart-wrap"><canvas id="weightChart" width="600" height="220"></canvas></div>
+<div id="measureList"></div>
+</section>
+
+<section id="inner-salud" class="inner-page">
+<div class="rowactions"><button id="newHealth" class="btn gold">+ Nuevo registro</button></div>
+<div id="healthSummary" class="health-grid"></div><div class="rowactions" style="margin-top:12px"><button id="openHealthHistory" class="btn primary">📋 Ver historial de salud</button></div>
+<div id="healthList" class="hidden"></div>
+</section>
+
+
+<section id="inner-veterinario" class="inner-page"><div id="healthHighlights"></div>
+<div class="card">
+<div class="field"><label>Veterinario / clínica habitual</label><input id="vetClinic"></div>
+<div class="grid">
+<div class="field"><label>Teléfono</label><input id="vetPhone"></div>
+<div class="field"><label>Nº historia clínica</label><input id="vetRecord"></div>
+</div>
+<div class="field"><label>Alergias</label><textarea id="vetAllergies"></textarea></div>
+<div class="field"><label>Enfermedades / antecedentes</label><textarea id="vetConditions"></textarea></div>
+<div class="field"><label>Medicación habitual</label><textarea id="vetMedication"></textarea></div>
+<button id="saveVet" class="btn primary">Guardar ficha veterinaria</button>
+</div>
+</section>
+
+<section id="inner-documentos" class="inner-page">
+<div class="small" style="margin:4px 0 10px">Puedes guardar varios archivos dentro de cada categoría, por ejemplo varias páginas de la cartilla.</div>
+<div id="docFolders"></div><div class="doc-official-block" data-dog-only="1">
+<div class="name" style="margin:12px 0 4px">Documentos de gestión</div>
+<div class="small" style="margin-bottom:10px">Formularios para identificación, cambios de titularidad y traslados.</div>
+<div class="doc-category official-form-card"><div class="doc-category-head"><div class="doc-category-title"><div class="doc-category-icon">🟢</div><div><div class="doc-category-name">RAIA - Documento de representación</div><div class="doc-category-count">Identificación / cambios / baja en ausencia del propietario</div></div></div><div class="rowactions"><button id="fillRaiaForm" class="btn primary">Cumplimentar</button><button id="openRaiaForm" class="btn gold">Ver original</button></div></div></div>
+<div class="doc-category official-form-card"><div class="doc-category-head"><div class="doc-category-title"><div class="doc-category-icon">🔄</div><div><div class="doc-category-name">REIAC - Cesión / traslado a otra comunidad</div><div class="doc-category-count">Baja en el registro de origen y cesión de propiedad</div></div></div><div class="rowactions"><button id="fillReiacForm" class="btn primary">Cumplimentar</button><button id="openReiacForm" class="btn gold">Ver original</button></div></div></div>
+</div>
+</section>
+
+
+
+<section id="inner-galeria" class="inner-page">
+<div class="rowactions"><button id="addGalleryPhoto" class="btn gold">+ Añadir foto</button></div>
+<input id="galleryFile" type="file" accept="image/*" multiple hidden>
+<div id="galleryGrid" class="gallery-grid"></div>
+</section>
+
+<section id="inner-contratos" class="inner-page" data-breeder-only="1">
+<div class="card transfer-contract-card" data-dog-only="1">
+  <div class="name">Cesión y cambio de titularidad</div>
+  <div class="small" style="margin-bottom:10px">Documentos para tramitar cambios relacionados con el microchip y el traslado entre comunidades.</div>
+  <div class="contract-actions-grid">
+    <button id="contractRaia" class="btn primary">RAIA · Rellenar original</button>
+    <button id="contractReiac" class="btn primary">REIAC · Rellenar original</button>
+    <button id="contractRaiaOriginal" class="btn gold">RAIA · Ver original</button>
+    <button id="contractReiacOriginal" class="btn gold">REIAC · Ver original</button>
+  </div>
+</div>
+
+<div class="card">
+<div class="name">Contratos del animal</div>
+<div class="small">Los datos del perro se rellenan automáticamente desde su ficha.</div>
+<div class="rowactions">
+<button id="contractSale" class="btn primary">Compraventa</button>
+<button id="contractBreeding" class="btn gold">Compraventa + cría</button>
+</div>
+</div>
+<div id="contractHistory"></div>
+</section>
+
+<section id="inner-reproduccion" class="inner-page" data-breeder-only="1">
+<div id="breedingPlanCardV57" class="card breeding-plan-v57 female-only-repro">
+  <div class="name">Plan reproductivo</div>
+  <div class="small">Controla el descanso tras una camada. El valor recomendado por defecto es descansar 1 celo.</div>
+  <div class="field">
+    <label>Después de una camada</label>
+    <select id="breedingRestCyclesV57">
+      <option value="1">Descansar 1 celo</option>
+      <option value="2">Descansar 2 celos</option>
+      <option value="0">Sin restricción automática</option>
+      <option value="nonbreeding">No reproductora</option><option value="sterilized">Esterilizada</option>
+    </select>
+  </div>
+  <div id="breedingPlanStatusV57" class="breeding-plan-status-v57"></div>
+<div class="small repro-status-help-v573"><b>No reproductora:</b> no se destina actualmente a cría. · <b>Esterilizada:</b> queda fuera del circuito reproductivo.</div>
+</div>
+<div class="rowactions"><button id="newRepro" class="btn gold">+ Añadir registro</button><button id="reproLittersBtn" class="btn primary female-only-repro">🐾 Mis camadas</button></div>
+<div id="reproTimelineV54" class="female-only-repro"></div>
+<div id="reproList"></div>
+<div class="small female-only-repro repro-camada-note-v572">Las camadas se registran y gestionan únicamente desde <b>Mis camadas</b>.</div>
+</section>
+
+
+<section id="inner-camadas" class="inner-page" data-breeder-only="1">
+<div class="rowactions"><button id="newLitter" class="btn gold">+ Nueva camada</button></div>
+<div id="litterList"></div>
+<div class="card breeder-pro-card">
+  <div class="name">Gestión individual de cachorros</div>
+  <div class="small">Abre una camada para añadir y controlar cada cachorro por separado.</div>
+</div>
+</section>
+
+<section id="inner-notas" class="inner-page">
+<div class="field"><label>Notas generales</label><textarea id="generalNotes"></textarea></div>
+<button id="saveNotes" class="btn primary">Guardar notas</button>
+</section>
+</div></div>
+
+<div id="measureModal" class="modal"><div class="sheet">
+<div class="sheethead"><strong>Nuevo control</strong><button class="x" data-close="measureModal">×</button></div>
+<form id="measureForm">
+<div class="grid">
+<div class="field"><label>Fecha</label><input id="mDate" type="date" required></div>
+<div class="field"><label>Peso (kg)</label><input id="mWeight" inputmode="decimal" type="number" step="0.01"></div>
+<div class="field"><label>Altura a la cruz (cm)</label><input id="mHeight" inputmode="decimal" type="number" step="0.1"></div>
+<div class="field"><label>Largo (cm)</label><input id="mLength" inputmode="decimal" type="number" step="0.1"></div>
+<div class="field"><label>Perímetro pecho (cm)</label><input id="mChest" inputmode="decimal" type="number" step="0.1"></div>
+</div>
+<div class="field"><label>Notas</label><input id="mNotes"></div>
+<button class="btn primary" type="submit">Guardar control</button>
+</form></div></div>
+
+<div id="healthModal" class="modal"><div class="sheet">
+<div class="sheethead"><strong>Salud</strong><button class="x" data-close="healthModal">×</button></div>
+<form id="healthForm">
+<div class="field"><label>Tipo</label>
+<select id="hType">
+<option>Vacuna</option>
+<option>Desparasitación interna</option>
+<option>Desparasitación externa</option>
+<option>Tratamiento / medicación</option>
+<option>Visita veterinaria</option>
+<option>Cirugía / intervención</option>
+<option>Analítica / prueba</option>
+<option>Otro</option>
+</select></div>
+<div class="grid">
+<div class="field"><label>Fecha realizada</label><input id="hDate" type="date" required></div>
+<div class="field" id="hNextField"><label id="hNextLabel">Próxima fecha</label><input id="hNext" type="date"></div>
+</div>
+<div class="field"><label id="hProductLabel">Producto / detalle</label><input id="hProduct"></div>
+<div class="grid">
+<div class="field"><label>Veterinario / clínica</label><input id="hVet"></div>
+<div class="field"><label>Dosis / pauta</label><input id="hDose"></div>
+</div>
+<div class="field"><label id="hDiagnosisLabel">Diagnóstico / resultado</label><textarea id="hDiagnosis"></textarea></div>
+<div class="field"><label>Adjuntar informe / foto / PDF</label><input id="hFile" type="file" accept="image/*,.pdf,application/pdf"></div>
+<div class="repeat-row">
+<div class="field"><label>Repetir cada</label><input id="hRepeatNum" type="number" inputmode="numeric" min="0" placeholder="Ej. 3"></div>
+<div class="field"><label>Unidad</label><select id="hRepeatUnit"><option value="months">meses</option><option value="weeks">semanas</option><option value="days">días</option></select></div>
+</div>
+<div class="field"><label>Notas</label><textarea id="hNotes"></textarea></div>
+<button class="btn primary" type="submit">Guardar</button>
+</form></div></div>
+
+
+<div id="docModal" class="modal"><div class="sheet">
+<div class="sheethead"><strong>Nuevo documento</strong><button class="x" data-close="docModal">×</button></div>
+<form id="docForm">
+<div class="field"><label>Tipo de documento</label>
+<select id="docType">
+<option>Cartilla sanitaria</option>
+<option>Pasaporte</option>
+<option>Pedigree</option>
+<option>Pruebas genéticas</option>
+<option>Certificado veterinario</option>
+<option>Contrato</option>
+<option>Cesión / cambio de titularidad</option>
+<option>Traslado entre comunidades</option>
+<option>Otro</option>
+</select></div>
+<div class="field"><label>Nombre / descripción</label><input id="docName" placeholder="Ej. Pedigree RSCE"></div>
+<div class="field"><label>Fecha</label><input id="docDate" type="date"></div>
+<div class="field"><label>Archivo o foto</label><input id="docFile" type="file" accept="image/*,.pdf,application/pdf"></div>
+<div class="field"><label>Notas</label><textarea id="docNotes"></textarea></div>
+<div class="file-note">El archivo se guarda dentro de la app en este iPhone. Las copias de seguridad incluirán también la documentación adjunta.</div>
+<button class="btn primary" type="submit">Guardar documento</button>
+</form></div></div>
+
+
+
+
+
+
+
+<div id="transferFormModal" class="modal"><div class="sheet transfer-sheet">
+  <div class="sheethead"><strong id="transferFormTitle">Documento</strong><button class="x" id="closeTransferForm">×</button></div>
+  <form id="transferForm">
+    <input id="transferKind" type="hidden">
+    <div class="card">
+      <div class="name">Datos del animal</div>
+      <div class="grid">
+        <div class="field"><label>Nombre</label><input id="tfDogName"></div>
+        <div class="field"><label>Microchip</label><input id="tfChip"></div>
+        <div class="field"><label>Raza</label><input id="tfBreed"></div>
+        <div class="field"><label>Sexo</label><input id="tfSex"></div>
+        <div class="field"><label>Fecha de nacimiento</label><input id="tfBirth" type="date"></div>
+        <div class="field"><label>Fecha del documento</label><input id="tfDate" type="date"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="name">Propietario actual / autorizante</div>
+      <div class="grid">
+        <div class="field"><label>Nombre y apellidos</label><input id="tfOldName"></div>
+        <div class="field"><label>DNI/NIF</label><input id="tfOldDni"></div>
+        <div class="field"><label>Teléfono</label><input id="tfOldPhone"></div>
+        <div class="field"><label>Email</label><input id="tfOldEmail"></div>
+      </div>
+      <div class="field"><label>Dirección</label><input id="tfOldAddress"></div>
+      <div class="grid">
+        <div class="field"><label>Código postal</label><input id="tfOldZip"></div>
+        <div class="field"><label>Localidad</label><input id="tfOldCity"></div>
+        <div class="field"><label>Provincia</label><input id="tfOldProvince"></div>
+      </div>
+    </div>
+    <div class="card" id="newOwnerBlock">
+      <div class="name">Nuevo propietario / autorizado</div>
+
+      <div class="grid">
+        <div class="field"><label>Nombre y apellidos</label><input id="tfNewName"></div>
+        <div class="field"><label>DNI/NIF</label><input id="tfNewDni"></div>
+        <div class="field"><label>Teléfono</label><input id="tfNewPhone"></div>
+        <div class="field"><label>Email</label><input id="tfNewEmail"></div>
+      </div>
+      <div class="field"><label>Dirección</label><input id="tfNewAddress"></div>
+      <div class="grid">
+        <div class="field"><label>Código postal</label><input id="tfNewZip"></div>
+        <div class="field"><label>Localidad</label><input id="tfNewCity"></div>
+        <div class="field"><label>Provincia</label><input id="tfNewProvince"></div>
+      </div>
+    </div>
+    <div class="card" id="reiacOptions">
+      <div class="name">Operación REIAC</div>
+      <div class="field"><label>Tipo</label><select id="tfOperation"><option value="cesion">Cesión al nuevo propietario para inscripción en otra comunidad</option><option value="traslado">Traslado a otra comunidad</option></select></div>
+      <div class="field"><label>Base de datos de origen</label><select id="tfOrigin"><option>Andalucía - RAIA</option><option>Aragón - RIACA</option><option>Asturias - RIAPA</option><option>Baleares - RIACIB</option><option>Canarias - ZOOCAN</option><option>Cantabria - RACIC</option><option>Castilla La Mancha - SIIA-CLM</option><option>Castilla y León - SIACYL</option><option>Cataluña - AIAC</option><option>Ceuta - SIACE</option><option>Extremadura - RIACE</option><option>Galicia - REGIAC</option><option>La Rioja - RIAC</option><option>Madrid - RIAC</option><option>Melilla - SIAMEL</option><option>Murcia - SIAMU</option><option>Navarra - REIAC</option><option>País Vasco - REGIA</option><option>Valencia - RIVIA</option></select></div>
+      <div class="name" style="margin-top:12px">Veterinario en la base de datos de destino</div>
+      <div class="grid">
+        <div class="field"><label>Nombre y apellidos</label><input id="tfVetName"></div>
+        <div class="field"><label>Nº colegiado</label><input id="tfVetNumber"></div>
+        <div class="field"><label>Provincia</label><input id="tfVetProvince"></div>
+      </div>
+    </div>
+    <div class="card" id="raiaOptions">
+      <div class="name">Operación RAIA</div>
+      <div class="field"><label>Actuación</label><select id="tfRaiaAction"><option>Cambio</option><option>Alta</option><option>Baja</option></select></div>
+      <div class="small">El formulario oficial RAIA exige firma del autorizante y del autorizado y debe acompañarse de la documentación indicada en el propio formulario.</div>
+    </div>
+    <div class="rowactions">
+      <button type="submit" class="btn primary">Preparar original rellenado</button>
+      <button type="button" id="cancelTransferForm" class="btn gold">Cancelar</button>
+    </div>
+  </form>
+</div></div>
+
+
+<div id="puppyModal" class="modal"><div class="sheet">
+<div class="sheethead"><strong id="puppyModalTitle">Cachorro</strong><button class="x" id="closePuppyModal">×</button></div>
+<form id="puppyForm">
+<input id="pLitterId" type="hidden"><input id="pId" type="hidden">
+<div class="grid">
+ <div class="field"><label>Nombre / identificación</label><input id="pName" placeholder="Ej. Rojo, Cachorro 1..."></div>
+ <div class="field"><label>Sexo</label><select id="pSex"><option value="">—</option><option>Macho</option><option>Hembra</option></select></div>
+ <div class="field"><label>Color</label><input id="pColor"></div>
+ <div class="field"><label>Peso al nacer (g)</label><input id="pBirthWeight" type="number" step="1" min="0"></div>
+ <div class="field"><label>Microchip</label><input id="pChip"></div>
+ <div class="field"><label>Estado</label><select id="pStatus"><option>Disponible</option><option>Reservado</option><option>Entregado</option><option>Se queda en casa</option></select></div>
+</div>
+<div class="field"><label>Foto</label><input id="pPhoto" type="file" accept="image/*"></div>
+<div class="field"><label>Notas</label><textarea id="pNotes"></textarea></div>
+<div class="rowactions"><button class="btn primary" type="submit">Guardar cachorro</button><button class="btn gold" type="button" id="cancelPuppyModal">Cancelar</button></div>
+</form></div></div>
+
+<div id="puppyWeightModal" class="modal"><div class="sheet">
+<div class="sheethead"><strong>Nuevo peso</strong><button class="x" id="closePuppyWeight">×</button></div>
+<form id="puppyWeightForm">
+<input id="pwLitterId" type="hidden"><input id="pwPuppyId" type="hidden">
+<div class="grid">
+ <div class="field"><label>Fecha</label><input id="pwDate" type="date" required></div>
+ <div class="field"><label>Peso (g)</label><input id="pwWeight" type="number" min="0" step="1" required></div>
+</div>
+<div class="field"><label>Notas</label><input id="pwNotes"></div>
+<button class="btn primary" type="submit">Guardar peso</button>
+</form></div></div>
+
+<div id="litterModal" class="modal"><div class="sheet">
+<div class="sheethead"><strong>Nueva camada</strong><button class="x" data-close="litterModal">×</button></div>
+<form id="litterForm">
+<div class="grid">
+<div class="field"><label>Fecha de nacimiento</label><input id="lBirth" type="date" required></div>
+<div class="field"><label>Nº de cachorros</label><input id="lCount" type="number" min="0"></div>
+</div>
+<div class="field"><label>Padre</label><input id="lFather"></div>
+<div class="field"><label>Madre</label><input id="lMother"></div>
+<div class="small" style="margin:6px 0 10px">Después de guardar la camada podrás añadir cada cachorro individualmente con su foto, peso, microchip y estado.</div>
+<div class="field"><label>Observaciones</label><textarea id="lNotes"></textarea></div>
+<button class="btn primary" type="submit">Guardar camada</button>
+</form></div></div>
+
+<div id="reproModal" class="modal"><div class="sheet">
+<div class="sheethead"><strong>Reproducción</strong><button class="x" data-close="reproModal">×</button></div>
+<form id="reproForm">
+<div class="field"><label>Tipo</label>
+<select id="rType">
+<option>Celo</option><option>Progesterona</option><option>Monta</option><option>Ecografía</option><option>Parto</option><option>Otro</option>
+</select></div>
+<div class="grid" id="rMainGrid">
+<div class="field"><label>Fecha</label><input id="rDate" type="date" required></div>
+<div class="field" id="rValueField"><label id="rValueLabel">Valor / resultado</label><input id="rValue" placeholder="Ej. 8,2 ng/ml / resultado"></div>
+</div>
+<div class="field" id="rReferenceField"><label id="rReferenceLabel">Macho / referencia</label><input id="rMale"></div>
+<div class="field" id="rExpectedField"><label id="rExpectedLabel">Fecha prevista</label><input id="rExpected" type="date"><div id="rExpectedHelp" class="small"></div></div>
+<div class="field"><label>Notas</label><textarea id="rNotes"></textarea></div>
+<button class="btn primary" type="submit">Guardar registro</button>
+</form></div></div>
+
+
+<div id="docViewerModal" class="doc-screen hidden">
+  <div class="doc-screen-bar">
+    <button id="docViewerBack" class="doc-back" type="button">‹</button>
+    <div id="docViewerTitle" class="doc-screen-title">Documento</div>
+    <button id="docViewerClose" class="doc-close" type="button">×</button>
+  </div>
+  <div id="docViewerBody" class="doc-screen-body"></div>
+  <div class="doc-screen-actions">
+    <button id="shareDoc" class="btn primary">Compartir</button>
+    <button id="downloadDoc" class="btn gold">Guardar archivo</button>
+  </div>
+</div>
+
+
+
+<div id="cmSideMenu" class="cm-side-menu">
+  <div class="cm-side-sheet">
+    <div class="sheethead"><strong>Petoria</strong><button id="cmMenuClose" class="x" type="button">×</button></div>
+    <button data-cm-page="inicio" type="button">⌂ Inicio</button>
+    <button data-cm-page="perros" type="button">🐾 Mascotas</button>
+    <button data-cm-page="calendario" type="button">🗓️ Calendario</button>
+    <button data-cm-page="ajustes" type="button">⚙ Ajustes</button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
+
+<style>
+.settings-divider-v574{height:1px;background:#e2cf9f;margin:28px 0 20px}
+.settings-copy-title-v574{margin-bottom:14px}
+.bottomnav,.bottom-nav{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+
+/* v57.5 · Estado reproductivo ampliado + búsqueda Mascotas */
+.nav-repro-v575 b{
+ color:#ef5f8d!important;font-size:25px!important;font-weight:900!important;line-height:1!important;
+}
+.repro-home-title-v575{
+ display:flex;align-items:center;gap:8px;border:0;background:none;padding:0;text-align:left;color:inherit;font-family:inherit;
+}
+.repro-home-title-v575 .small{display:block}
+.female-symbol-home-v575,.female-symbol-v575{
+ color:#ef5f8d;font-family:Arial,sans-serif;font-weight:900;line-height:.9;
+ -webkit-text-stroke:.6px #ef5f8d;
+}
+.female-symbol-home-v575{font-size:31px}
+.female-symbol-v575{font-size:43px}
+.repro-page-head-v575{
+ display:flex;align-items:center;justify-content:space-between;gap:10px;margin:5px 2px 14px;
+}
+.repro-page-title-v575{display:flex;align-items:center;gap:10px}
+.repro-page-title-v575 .name{font-size:19px;font-weight:850;color:#4a321f}
+.repro-page-title-v575 .small{font-size:11px;color:#7a7067;margin-top:2px}
+
+.repro-summary-v575{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:10px;
+}
+.repro-summary-item-v575{
+ border:1px solid #eadcc6;background:#fffdf8;border-radius:13px;padding:8px 5px;text-align:center;
+ min-width:0;
+}
+.repro-summary-item-v575 b{display:block;font-size:16px;margin-top:2px}
+.repro-summary-item-v575 span{display:block;font-size:9px;line-height:1.15}
+.repro-summary-item-v575.pregnant{color:#8754bd}
+.repro-summary-item-v575.lactation{color:#3f8ed4}
+.repro-summary-item-v575.rest{color:#ef760d}
+.repro-summary-item-v575.heat{color:#e45584}
+.repro-summary-item-v575.soon{color:#d99a06}
+.repro-summary-item-v575.ready{color:#3d8d53}
+.repro-summary-item-v575.inactive{color:#77716a}
+
+.repro-full-card-v575{padding:4px 12px!important}
+.repro-full-row-v575{
+ position:relative;display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:9px;align-items:center;
+ width:100%;padding:11px 2px;border:0;border-bottom:1px solid #eee2d0;background:transparent;
+ color:#433227;text-align:left;font-family:inherit;
+}
+.repro-full-row-v575:last-child{border-bottom:0}
+.repro-full-row-v575 .photo{
+ width:48px!important;height:48px!important;min-width:48px!important;border-width:2px!important;font-size:22px!important;
+}
+.repro-full-row-v575 .repro-name-v575{font-size:14px;font-weight:850}
+.repro-full-row-v575 .repro-detail-v575{font-size:10px;color:#71675f;line-height:1.35;margin-top:3px}
+.repro-row-right-v575{text-align:right;min-width:92px}
+.repro-row-right-v575 .repro-date-label-v575{font-size:8.5px;color:#766b62}
+.repro-row-right-v575 .repro-date-v575{font-size:11px;font-weight:800;margin-top:2px}
+.repro-heat-pill-v575{
+ display:inline-flex;align-items:center;margin-left:5px;padding:3px 7px;border-radius:999px;
+ background:#ffe6ee;color:#e64e7d;border:1px solid #f6acc3;font-size:8.5px;font-weight:900;
+}
+.repro-heat-alert-v575{
+ margin:10px 0;padding:11px;border-radius:14px;border:1px solid #f5bbcb;
+ background:#fff0f4;color:#7e3e52;font-size:10.5px;line-height:1.45;
+}
+.repro-heat-alert-v575 b{color:#e64e7d;font-size:12px}
+.repro-info-v575{margin-top:10px!important}
+.repro-info-v575 b{font-size:11px}
+.repro-info-v575 .small{margin-top:4px;line-height:1.4}
+
+.pet-search-v575{padding:9px!important;margin-bottom:10px!important}
+.pet-search-row-v575{display:grid;grid-template-columns:minmax(0,1fr) 112px;gap:7px}
+.pet-search-input-v575{
+ display:flex;align-items:center;gap:5px;border:1px solid #d9bb78;border-radius:12px;background:#fffdf8;padding:0 9px;
+}
+.pet-search-input-v575 span{font-size:19px;color:#846942}
+.pet-search-input-v575 input{
+ width:100%;min-width:0;border:0!important;background:transparent!important;padding:10px 2px!important;box-shadow:none!important;
+ font-size:13px!important;
+}
+#petSearchSexV575{
+ width:100%;min-width:0;border:1px solid #d9bb78!important;border-radius:12px!important;background:#fffdf8!important;
+ padding:8px!important;font-size:12px!important;
+}
+.pet-search-empty-v575{padding:18px;text-align:center;color:#766b61}
+
+/* five bottom buttons in breeder, four when breeder item is hidden */
+.cm-bottom-nav{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+body.mode-owner-v55 .cm-bottom-nav{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+@media(max-width:390px){
+ .pet-search-row-v575{grid-template-columns:minmax(0,1fr) 96px}
+ .repro-summary-v575{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .cm-bottom-nav button span{font-size:9px!important}
+}
+
+
+/* v57.6 · refinado visual Hembras + estado en tarjetas */
+.nav-repro-v575{
+ display:flex!important;
+ flex-direction:column!important;
+ align-items:center!important;
+ justify-content:center!important;
+ gap:2px!important;
+}
+.nav-repro-v575 b{
+ color:#ef5f8d!important;
+ font-family:Arial,sans-serif!important;
+ font-size:31px!important;
+ font-weight:900!important;
+ line-height:.88!important;
+ -webkit-text-stroke:.9px #ef5f8d!important;
+ transform:translateY(1px);
+}
+.nav-repro-v575 span{
+ font-size:inherit!important;
+ line-height:1.1!important;
+ font-weight:700!important;
+}
+
+/* alert + reproductive-state icons share one aligned row */
+.dog-card-v561{position:relative!important}
+.pet-card-top-icons-v576{
+ position:absolute;right:9px;top:9px;z-index:8;
+ display:flex;align-items:center;gap:5px;
+}
+.pet-card-top-icons-v576 .dog-alert-bell-v561{
+ position:static!important;right:auto!important;top:auto!important;
+ width:29px;height:29px;
+}
+.pet-repro-icon-v576{
+ width:29px;height:29px;border-radius:50%;
+ display:grid;place-items:center;
+ border:1px solid currentColor;background:#fffdf8;
+ box-shadow:0 3px 9px rgba(73,49,26,.08);
+ font-size:15px;font-weight:900;line-height:1;
+}
+.pet-repro-icon-v576.heat{color:#ef5f8d;background:#fff0f5}
+.pet-repro-icon-v576.pregnant{color:#8552b7;background:#f5effb}
+.pet-repro-icon-v576.lactation{color:#3f8ed4;background:#eef7ff}
+.pet-repro-icon-v576.rest{color:#ef760d;background:#fff3e8}
+.pet-repro-icon-v576.soon{color:#d99a06;background:#fff8df}
+.pet-repro-icon-v576.ready{color:#3d8d53;background:#eef8f0}
+.pet-repro-icon-v576.nonbreeding,
+.pet-repro-icon-v576.sterilized{color:#77716a;background:#f2f0ed}
+
+.pet-repro-line-v576{
+ display:flex;align-items:center;gap:5px;flex-wrap:wrap;
+ margin-top:5px;font-size:10px;line-height:1.25;
+}
+.pet-repro-pill-v576{
+ display:inline-flex;align-items:center;gap:4px;
+ padding:3px 7px;border-radius:999px;font-weight:800;
+}
+.pet-repro-pill-v576.heat{background:#ffe7ef;color:#e64e7d}
+.pet-repro-pill-v576.pregnant{background:#f1e8f8;color:#7e50aa}
+.pet-repro-pill-v576.lactation{background:#e7f3fd;color:#337dbb}
+.pet-repro-pill-v576.rest{background:#fff0df;color:#d66809}
+.pet-repro-pill-v576.soon{background:#fff4cf;color:#b77d00}
+.pet-repro-pill-v576.ready{background:#e8f4ea;color:#337845}
+.pet-repro-pill-v576.nonbreeding,
+.pet-repro-pill-v576.sterilized{background:#eeece8;color:#706a64}
+.pet-repro-date-v576{color:#74695f}
+
+@media(max-width:390px){
+ .nav-repro-v575 b{font-size:29px!important}
+ .pet-card-top-icons-v576{right:7px;top:7px;gap:4px}
+ .pet-card-top-icons-v576 .dog-alert-bell-v561,
+ .pet-repro-icon-v576{width:27px;height:27px}
+}
+
+
+.pet-detail-repro-v576{
+ margin-top:10px!important;border-color:#f0c7d3!important;background:#fff8fa!important;
+}
+.pet-detail-repro-head-v576{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.pet-detail-repro-head-v576 b{font-size:12px}
+.female-symbol-detail-v576{
+ color:#ef5f8d;font-family:Arial,sans-serif;font-weight:900;font-size:24px;
+ -webkit-text-stroke:.6px #ef5f8d;line-height:1;
+}
+.pet-detail-repro-head-v576 .pet-repro-pill-v576{margin-left:auto}
+
+
+/* v57.7 · indicadores reproductivos interactivos */
+button.repro-summary-item-v575{appearance:none;-webkit-appearance:none;font-family:inherit;cursor:pointer;width:100%}
+button.repro-summary-item-v575:active{transform:scale(.98)}
+button.repro-summary-item-v575.active-filter-v577{border-width:2px;box-shadow:0 4px 14px rgba(77,52,31,.12)}
+button.repro-summary-item-v575.active-filter-v577.pregnant{background:#f5edfb}
+button.repro-summary-item-v575.active-filter-v577.lactation{background:#edf7ff}
+button.repro-summary-item-v575.active-filter-v577.rest{background:#fff2e6}
+button.repro-summary-item-v575.active-filter-v577.heat{background:#fff0f5}
+button.repro-summary-item-v575.active-filter-v577.soon{background:#fff7dd}
+button.repro-summary-item-v575.active-filter-v577.ready{background:#eef8f0}
+button.repro-summary-item-v575.active-filter-v577.inactive{background:#f2f0ed}
+
+
+/* v57.8 · Calendario: campos Desde/Hasta contenidos y alineados */
+#calendarMonthRange.calendar-range-v56,
+#calendarDateRange.calendar-range-v56{
+  display:grid!important;
+  grid-template-columns:minmax(0,calc(50% - 6px)) minmax(0,calc(50% - 6px))!important;
+  column-gap:12px!important;
+  width:100%!important;
+  max-width:100%!important;
+  padding:0!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+  overflow:visible!important;
+}
+
+#calendarMonthRange .field,
+#calendarDateRange .field{
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  margin:0!important;
+  padding:0!important;
+  box-sizing:border-box!important;
+  overflow:visible!important;
+}
+
+#calendarMonthFrom,
+#calendarMonthTo,
+#calendarDateFrom,
+#calendarDateTo{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  height:48px!important;
+  padding:0 8px!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+  font-size:14px!important;
+  line-height:1.1!important;
+  text-align:center!important;
+  border-radius:11px!important;
+  overflow:hidden!important;
+}
+
+#calendarMonthRange label,
+#calendarDateRange label{
+  display:block!important;
+  margin-bottom:5px!important;
+  font-size:12px!important;
+}
+
+@media(max-width:430px){
+  #calendarMonthRange.calendar-range-v56,
+  #calendarDateRange.calendar-range-v56{
+    grid-template-columns:minmax(0,calc(50% - 5px)) minmax(0,calc(50% - 5px))!important;
+    column-gap:10px!important;
+  }
+  #calendarMonthFrom,
+  #calendarMonthTo,
+  #calendarDateFrom,
+  #calendarDateTo{
+    height:46px!important;
+    padding:0 5px!important;
+    font-size:12.5px!important;
+  }
+}
+
+@media(max-width:360px){
+  #calendarMonthRange.calendar-range-v56,
+  #calendarDateRange.calendar-range-v56{
+    column-gap:8px!important;
+    grid-template-columns:minmax(0,calc(50% - 4px)) minmax(0,calc(50% - 4px))!important;
+  }
+  #calendarMonthFrom,
+  #calendarMonthTo,
+  #calendarDateFrom,
+  #calendarDateTo{
+    font-size:11.5px!important;
+    padding:0 3px!important;
+  }
+}
+
+
+/* v57.9 · Barra inferior: iconos uniformes y perfectamente alineados */
+.bottom-nav{
+  align-items:stretch!important;
+}
+.bottom-nav button,
+.bottom-nav .nav-repro-v575{
+  display:grid!important;
+  grid-template-rows:38px 22px!important;
+  align-items:center!important;
+  justify-items:center!important;
+  align-content:center!important;
+  gap:2px!important;
+  padding-top:8px!important;
+  padding-bottom:8px!important;
+  line-height:1!important;
+}
+.bottom-nav button > span:first-child,
+.bottom-nav button > b:first-child,
+.bottom-nav .nav-repro-v575 > b:first-child{
+  width:38px!important;
+  height:38px!important;
+  min-width:38px!important;
+  min-height:38px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  margin:0!important;
+  padding:0!important;
+  line-height:38px!important;
+  font-size:30px!important;
+  transform:none!important;
+}
+.bottom-nav .nav-repro-v575 > b:first-child{
+  font-family:Arial,sans-serif!important;
+  font-size:31px!important;
+  font-weight:900!important;
+  -webkit-text-stroke:.8px #ef5f8d!important;
+}
+.bottom-nav button > span:last-child,
+.bottom-nav .nav-repro-v575 > span:last-child{
+  height:22px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  margin:0!important;
+  padding:0!important;
+  font-size:12px!important;
+  font-weight:700!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+}
+
+
+/* v58.1 · Calendario: rango único visible y texto centrado */
+#calendarMonthRange.hidden,
+#calendarDateRange.hidden{
+  display:none!important;
+}
+
+#calendarMonthRange.calendar-range-v56:not(.hidden),
+#calendarDateRange.calendar-range-v56:not(.hidden){
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  gap:12px!important;
+  width:100%!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+}
+
+#calendarMonthRange .field,
+#calendarDateRange .field{
+  min-width:0!important;
+  width:100%!important;
+  max-width:100%!important;
+  overflow:hidden!important;
+}
+
+#calendarMonthFrom,
+#calendarMonthTo,
+#calendarDateFrom,
+#calendarDateTo{
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  height:50px!important;
+  box-sizing:border-box!important;
+  padding:0 7px!important;
+  margin:0!important;
+  text-align:center!important;
+  font-size:15px!important;
+  line-height:50px!important;
+}
+
+/* iPhone / Safari centers the native month/date text with this internal value */
+#calendarMonthFrom::-webkit-date-and-time-value,
+#calendarMonthTo::-webkit-date-and-time-value,
+#calendarDateFrom::-webkit-date-and-time-value,
+#calendarDateTo::-webkit-date-and-time-value{
+  text-align:center!important;
+  width:100%!important;
+  min-width:100%!important;
+  margin:0!important;
+  padding:0!important;
+  font-size:15px!important;
+}
+
+@media(max-width:430px){
+  #calendarMonthRange.calendar-range-v56:not(.hidden),
+  #calendarDateRange.calendar-range-v56:not(.hidden){
+    gap:9px!important;
+  }
+  #calendarMonthFrom,
+  #calendarMonthTo,
+  #calendarDateFrom,
+  #calendarDateTo,
+  #calendarMonthFrom::-webkit-date-and-time-value,
+  #calendarMonthTo::-webkit-date-and-time-value,
+  #calendarDateFrom::-webkit-date-and-time-value,
+  #calendarDateTo::-webkit-date-and-time-value{
+    font-size:14px!important;
+  }
+}
+
+/* v58.1 · Barra inferior Hembras */
+.bottom-nav .nav-repro-v575{
+  gap:5px!important;
+}
+.bottom-nav .nav-repro-v575 > b:first-child{
+  font-size:32px!important;
+  line-height:34px!important;
+  transform:translateY(-2px)!important;
+}
+.bottom-nav .nav-repro-v575 > span:last-child{
+  font-size:12.5px!important;
+  font-weight:700!important;
+  line-height:1!important;
+}
+
+/* v58.1 · Inicio: resumen reproductivo compacto, sin listado individual */
+.home-repro-summary-v581{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:6px;
+  margin-top:9px;
+}
+.home-repro-summary-item-v581{
+  min-width:0;
+  border:1px solid #eadcc6;
+  border-radius:11px;
+  padding:7px 3px;
+  background:#fffdf8;
+  text-align:center;
+}
+.home-repro-summary-item-v581 span{
+  display:block;
+  font-size:8.5px;
+  line-height:1.15;
+  color:#6f655c;
+}
+.home-repro-summary-item-v581 b{
+  display:block;
+  font-size:15px;
+  margin-top:3px;
+  color:#4d3928;
+}
+@media(max-width:390px){
+  .home-repro-summary-v581{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+  .home-repro-summary-item-v581{padding:6px 2px}
+  .home-repro-summary-item-v581 span{font-size:7.8px}
+}
+
+
+/* v58.2 · Barra inferior en una única línea: icono + nombre */
+.bottom-nav button,
+.bottom-nav .nav-repro-v575{
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:center!important;
+  align-content:center!important;
+  gap:5px!important;
+  padding:8px 3px!important;
+  white-space:nowrap!important;
+  line-height:1!important;
+}
+
+.bottom-nav button > span:first-child,
+.bottom-nav button > b:first-child,
+.bottom-nav .nav-repro-v575 > b:first-child{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:auto!important;
+  height:auto!important;
+  min-width:0!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  font-size:21px!important;
+  line-height:1!important;
+  transform:none!important;
+}
+
+.bottom-nav .nav-repro-v575 > b:first-child{
+  font-size:23px!important;
+  font-weight:900!important;
+}
+
+.bottom-nav button > span:last-child,
+.bottom-nav .nav-repro-v575 > span:last-child{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:auto!important;
+  height:auto!important;
+  margin:0!important;
+  padding:0!important;
+  font-size:10.5px!important;
+  font-weight:700!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+}
+
+@media(max-width:390px){
+  .bottom-nav button,
+  .bottom-nav .nav-repro-v575{gap:3px!important;padding-left:2px!important;padding-right:2px!important}
+  .bottom-nav button > span:first-child,
+  .bottom-nav button > b:first-child,
+  .bottom-nav .nav-repro-v575 > b:first-child{font-size:19px!important}
+  .bottom-nav button > span:last-child,
+  .bottom-nav .nav-repro-v575 > span:last-child{font-size:9.4px!important}
+}
+
+
+/* v58.3 · Calendario: Desde/Hasta mes más estrechos y contenidos */
+#calendarMonthRange.calendar-range-v56:not(.hidden){
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  column-gap:14px!important;
+  width:calc(100% - 18px)!important;
+  max-width:calc(100% - 18px)!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  padding:0!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+}
+#calendarMonthRange .field{
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+}
+#calendarMonthFrom,
+#calendarMonthTo{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  height:46px!important;
+  margin:0!important;
+  padding:0 4px!important;
+  font-size:14px!important;
+  text-align:center!important;
+  border-radius:10px!important;
+}
+#calendarMonthFrom::-webkit-date-and-time-value,
+#calendarMonthTo::-webkit-date-and-time-value{
+  width:100%!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:0!important;
+  text-align:center!important;
+  font-size:14px!important;
+}
+@media(max-width:390px){
+ #calendarMonthRange.calendar-range-v56:not(.hidden){
+   width:calc(100% - 24px)!important;
+   max-width:calc(100% - 24px)!important;
+   column-gap:12px!important;
+ }
+ #calendarMonthFrom,#calendarMonthTo{
+   height:44px!important;
+   padding:0 2px!important;
+   font-size:13px!important;
+ }
+ #calendarMonthFrom::-webkit-date-and-time-value,
+ #calendarMonthTo::-webkit-date-and-time-value{font-size:13px!important}
+}
+
+
+/* v58.4 · Desde/Hasta mes: cuadros más cortos para evitar solape */
+#calendarMonthRange.calendar-range-v56:not(.hidden){
+  grid-template-columns:minmax(0,44%) minmax(0,44%)!important;
+  justify-content:space-between!important;
+  column-gap:0!important;
+  width:100%!important;
+  max-width:100%!important;
+  padding:0 14px!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+}
+#calendarMonthRange .field{
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+}
+#calendarMonthFrom,
+#calendarMonthTo{
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  padding-left:3px!important;
+  padding-right:3px!important;
+}
+@media(max-width:390px){
+ #calendarMonthRange.calendar-range-v56:not(.hidden){
+   grid-template-columns:minmax(0,42%) minmax(0,42%)!important;
+   padding-left:12px!important;
+   padding-right:12px!important;
+ }
+}
+
+
+/* v58.5 · Corrección definitiva calendario + barra inferior */
+
+/* Calendario: dos columnas completas, sin recorte ni solape */
+#calendarMonthRange.calendar-range-v56:not(.hidden){
+  display:grid!important;
+  grid-template-columns:calc((100% - 16px)/2) calc((100% - 16px)/2)!important;
+  gap:16px!important;
+  width:100%!important;
+  max-width:100%!important;
+  margin:0!important;
+  padding:0 10px!important;
+  box-sizing:border-box!important;
+  overflow:visible!important;
+}
+#calendarMonthRange .field{
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  margin:0!important;
+  padding:0!important;
+  box-sizing:border-box!important;
+  overflow:visible!important;
+}
+#calendarMonthFrom,#calendarMonthTo{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  height:46px!important;
+  margin:0!important;
+  padding:0 2px!important;
+  box-sizing:border-box!important;
+  font-size:13px!important;
+  text-align:center!important;
+  border-radius:10px!important;
+}
+#calendarMonthFrom::-webkit-date-and-time-value,
+#calendarMonthTo::-webkit-date-and-time-value{
+  width:100%!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:0!important;
+  text-align:center!important;
+  font-size:13px!important;
+}
+
+/* Barra inferior: SIEMPRE una única línea */
+.bottom-nav{
+  display:flex!important;
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+}
+.bottom-nav button,
+.bottom-nav .nav-repro-v575{
+  flex:1 1 0!important;
+  min-width:0!important;
+  display:flex!important;
+  flex-direction:row!important;
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:3px!important;
+  padding:9px 1px!important;
+  white-space:nowrap!important;
+}
+.bottom-nav button > span:first-child,
+.bottom-nav button > b:first-child,
+.bottom-nav .nav-repro-v575 > b:first-child{
+  display:inline-flex!important;
+  width:auto!important;height:auto!important;min-width:0!important;min-height:0!important;
+  margin:0!important;padding:0!important;
+  font-size:18px!important;line-height:1!important;
+  transform:none!important;
+}
+.bottom-nav button > span:last-child,
+.bottom-nav .nav-repro-v575 > span:last-child{
+  display:inline!important;
+  width:auto!important;height:auto!important;
+  margin:0!important;padding:0!important;
+  font-size:9.5px!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+}
+.bottom-nav .nav-repro-v575 > b:first-child{font-size:20px!important}
+@media(max-width:390px){
+  .bottom-nav button,.bottom-nav .nav-repro-v575{gap:2px!important;padding-left:0!important;padding-right:0!important}
+  .bottom-nav button > span:last-child,.bottom-nav .nav-repro-v575 > span:last-child{font-size:8.8px!important}
+  .bottom-nav button > span:first-child,.bottom-nav button > b:first-child,.bottom-nav .nav-repro-v575 > b:first-child{font-size:17px!important}
+}
+
+
+/* v58.6 · Hembras solo visible en modo Criador / Profesional */
+body.mode-owner-v55 .cm-bottom-nav [data-breeder-only="1"]{
+  display:none!important;
+}
+body.mode-breeder-v55 .cm-bottom-nav [data-breeder-only="1"]{
+  display:flex!important;
+}
+
+</style>

@@ -1,0 +1,13 @@
+PETORIA
+
+IMPORTANTE:
+Esta carpeta es una PWA. Para que los botones funcionen correctamente en iPhone debe abrirse desde una dirección web HTTPS.
+Un visor de archivos o el visor interno de ChatGPT puede mostrar el diseño pero bloquear el código.
+
+Una vez publicada:
+1. Abre la dirección en SAFARI.
+2. Pulsa Compartir.
+3. Pulsa “Añadir a pantalla de inicio”.
+4. Abre Petoria desde el icono creado.
+
+Después funciona como una app y conserva las fichas en el iPhone.
